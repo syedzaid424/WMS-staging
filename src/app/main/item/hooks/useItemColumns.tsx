@@ -15,7 +15,9 @@ const useItemColumns = () => {
 
     const navigate = useNavigate();
 
-    const handleEdit = (record: any) => { }
+    const handleEdit = (record: any) => {
+        console.log(record)
+     }
 
     // to generate QR code.
     const handleItemDetails = async (record: ItemRow) => {

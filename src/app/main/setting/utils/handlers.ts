@@ -1,4 +1,4 @@
-import type { WarehouseRow } from "../types";
+import type { WarehouseRow } from "../../../../types/main/warehouse";
 
 const mapWarehouseResponse = (data: any[]): WarehouseRow[] => {
     return (data || []).map((item) => ({

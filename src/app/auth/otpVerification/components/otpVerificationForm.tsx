@@ -1,6 +1,6 @@
 
 import { useForm, Controller } from "react-hook-form";
-import { Button, Input } from "antd";
+import { Input } from "antd";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { IoArrowBackOutline } from "react-icons/io5";

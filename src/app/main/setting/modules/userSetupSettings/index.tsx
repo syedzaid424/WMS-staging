@@ -15,7 +15,7 @@ const UserSetup = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const [openModal, setOpenModal] = useState(false);
-    const [refreshLocationTypes, setRefreshLocationTypes] = useState(0);
+    const [refreshLocationTypes] = useState(0);
     const [refreshWarehouses, setRefreshWarehouses] = useState(0);
     const activeTab = searchParams.get("tab");
     const navigate = useNavigate();

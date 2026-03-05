@@ -40,7 +40,9 @@ const Items = () => {
     showSuccessMessage: false
   });
 
-  const handleEdit = (record: any) => { };
+  // const handleEdit = (record: any) => {
+  //   console.log(record)
+  // };
 
   const actionHandler = () => {
     navigate(appRoutes.CREATE_ITEM)

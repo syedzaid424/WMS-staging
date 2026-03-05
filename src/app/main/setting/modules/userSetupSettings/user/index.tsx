@@ -9,7 +9,7 @@ import type { ApiResponse } from "../../../../../../utils/types";
 import { settingApiRoute } from "../../../utils/apiRoutes";
 import { appRoutes } from "../../../../../../utils/constants";
 import { useNavigate } from "react-router";
-import type { UserListData, UserListItem, UserRow, UserWarehouseOption } from "../../../../../../types/main/user";
+import type { UserListData, UserRow, UserWarehouseOption } from "../../../../../../types/main/user";
 
 interface LocationTypesProps {
     refreshLocationTypes?: number;

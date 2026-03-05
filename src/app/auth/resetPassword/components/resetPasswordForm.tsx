@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import { resetPasswordSchema } from "../schemas";
 import type { ResetPasswordInterface } from "../types";
 import { Link } from "react-router";
-import { Button, Input } from "antd";
+import { Input } from "antd";
 import { useEffect, useState } from "react";
 import AppButton from "../../../../components/button";
 import AppText from "../../../../components/text";

@@ -62,7 +62,9 @@ const Location = () => {
         setOpenModal(true)
     }
 
-    const handleEdit = (record: any) => { };
+    const handleEdit = (record: any) => { 
+        console.log(record)
+    };
 
     // to generate QR code.
     const handleQR = async (record: any) => {

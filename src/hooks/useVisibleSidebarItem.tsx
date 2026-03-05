@@ -1,16 +1,16 @@
 import type { MenuProps } from "antd";
 import { useNavigate } from "react-router"
 import { appRoutes } from "../utils/constants";
-import { FaWarehouse, FaCartArrowDown } from "react-icons/fa";
+import { FaWarehouse } from "react-icons/fa";
 import { RiDashboardHorizontalFill } from "react-icons/ri";
-import { SiWebassembly } from "react-icons/si";
-import { FaLocationDot } from "react-icons/fa6";
+// import { SiWebassembly } from "react-icons/si";
+// import { FaLocationDot } from "react-icons/fa6";
 import { TiThList } from "react-icons/ti";
-import { MdContacts } from "react-icons/md";
-import { SiCodeblocks } from "react-icons/si";
-import { RiAlarmWarningFill } from "react-icons/ri";
-import { BiTransferAlt } from "react-icons/bi";
-import { FaHollyBerry } from "react-icons/fa6";
+// import { MdContacts } from "react-icons/md";
+// import { SiCodeblocks } from "react-icons/si";
+// import { RiAlarmWarningFill } from "react-icons/ri";
+// import { BiTransferAlt } from "react-icons/bi";
+// import { FaHollyBerry } from "react-icons/fa6";
 import { FiSettings } from "react-icons/fi";
 
 

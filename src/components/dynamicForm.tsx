@@ -170,7 +170,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                     control={control}
                     render={({ field: rhfField, fieldState }) => {
                         const status = fieldState.error ? ("error" as const) : undefined;
-                        const FIELD_SIZE: "large" | "middle" | "small" = "large";
+                        // const FIELD_SIZE: "large" | "middle" | "small" = "large";
                         const commonProps = {
                             placeholder: field.placeholder,
                             disabled: field.readOnly,

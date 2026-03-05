@@ -1,6 +1,5 @@
-import { Table, Checkbox } from "antd";
+import { Table } from "antd";
 import type { TableProps, ColumnsType } from "antd/es/table";
-import type { MenuProps } from "antd";
 import { useState, useMemo } from "react";
 
 interface AppTableProps<T> extends TableProps<T> {
@@ -23,7 +22,7 @@ function AppTable<T>({
     rowKey,
     ...rest
 }: AppTableProps<T>) {
-    const [visibleColumns, setVisibleColumns] = useState<string[]>(
+    const [visibleColumns] = useState<string[]>(
         columns.map((col) => String(col.key))
     );
 
@@ -35,25 +34,25 @@ function AppTable<T>({
     }, [columns, visibleColumns]);
 
     // Column toggle menu
-    const columnMenuItems: MenuProps["items"] = columns.map((col) => ({
-        key: String(col.key),
-        label: (
-            <Checkbox
-                checked={visibleColumns.includes(String(col.key))}
-                onChange={(e) => {
-                    if (e.target.checked) {
-                        setVisibleColumns((prev) => [...prev, String(col.key)]);
-                    } else {
-                        setVisibleColumns((prev) =>
-                            prev.filter((key) => key !== String(col.key))
-                        );
-                    }
-                }}
-            >
-                {col.title as string}
-            </Checkbox>
-        ),
-    }));
+    // const columnMenuItems: MenuProps["items"] = columns.map((col) => ({
+    //     key: String(col.key),
+    //     label: (
+    //         <Checkbox
+    //             checked={visibleColumns.includes(String(col.key))}
+    //             onChange={(e) => {
+    //                 if (e.target.checked) {
+    //                     setVisibleColumns((prev) => [...prev, String(col.key)]);
+    //                 } else {
+    //                     setVisibleColumns((prev) =>
+    //                         prev.filter((key) => key !== String(col.key))
+    //                     );
+    //                 }
+    //             }}
+    //         >
+    //             {col.title as string}
+    //         </Checkbox>
+    //     ),
+    // }));
 
     return (
         <>
