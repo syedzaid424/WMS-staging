@@ -1,0 +1,166 @@
+@import "tailwindcss";
+
+* {
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-primary: #123235;
+    --color-accent: #d4e157;
+    --color-text-light: #ffffff;
+    --color-text-dark: #333333;
+    --color-bg-light: #f5f5f5;
+    --color-text-headings: #014F43;
+}
+
+@layer base {
+    body {
+        font-family: "Poppins", sans-serif !important;
+    }
+
+    /* Remove default selected background */
+    .ant-menu-dark .ant-menu-item-selected {
+        background-color: transparent !important;
+        color: var(--color-accent) !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4.ant-typography {
+        margin: 0px !important;
+        color: var(--color-text-headings) !important;
+    }
+
+    div.ant-typography {
+        margin: 0px !important;
+    }
+
+    .ant-select-item-option-content {
+        font-weight: 400 !important;
+    }
+
+    .ant-select-content.ant-select-content-has-value {
+        font-weight: 400 !important;
+    }
+
+    .ant-select-placeholder {
+        font-weight: 400 !important;
+    }
+
+    /* removing antd default effects */
+    .ant-btn.ant-btn-color-default,
+    .ant-btn.ant-btn-color-default:hover,
+    .ant-btn.ant-btn-color-default:focus,
+    .ant-btn.ant-btn-color-default:active,
+    .ant-btn.ant-btn-color-default:focus-visible {
+        background-color: var(--color-text-headings) !important;
+        color: var(--color-text-light) !important;
+        opacity: 0.9;
+        border: none !important;
+        box-shadow: none !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .ant-select.ant-select-outlined:hover,
+    .ant-select.ant-select-outlined:focus,
+    .ant-select.ant-select-outlined:active,
+    .ant-select.ant-select-outlined:focus-visible,
+    .ant-select.ant-select-outlined:not(.ant-select-disabled).ant-select-focused {
+        border: 1px solid var(--color-primary) !important;
+        box-shadow: none !important;
+    }
+
+    .ant-input-password:hover,
+    .ant-input-password:focus,
+    .ant-input-password:active,
+    .ant-input-password:focus-visible,
+    .ant-input.ant-input-outlined:hover,
+    .ant-input.ant-input-outlined:focus,
+    .ant-input.ant-input-outlined:active,
+    .ant-input.ant-input-outlined:focus-visible {
+        box-shadow: none !important;
+        border: 1px solid var(--color-primary) !important;
+    }
+
+    /* antd menu colors */
+    .ant-menu-dark.ant-menu-root.ant-menu-inline {
+        background-color: var(--color-primary) !important;
+    }
+
+    /* antd menu when sidebar collapsed colors */
+    .ant-layout-sider .ant-layout-sider-children .ant-menu.ant-menu-inline-collapsed {
+        background-color: var(--color-primary) !important;
+    }
+
+    /* antd tab button colors */
+    .ant-tabs-tab-btn {
+        color: var(--color-primary) !important;
+    }
+
+    /* anrd tab active bar */
+    .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
+        background-color: var(--color-primary) !important;
+    }
+}
+
+.label-color {
+    color: #4d4d50 !important;
+}
+
+.paragraph-color {
+    color: #828799 !important;
+}
+
+.primary-color {
+    color: var(--color-primary) !important;
+}
+
+.primary-bg-color {
+    background-color: var(--color-primary) !important;
+}
+
+.secondary-color {
+    color: var(--color-text-headings) !important;
+}
+
+.secondary-bg-color {
+    background-color: var(--color-text-headings) !important;
+}
+
+a {
+    color: var(--color-primary);
+    transition: all 0.2 ease-in-out;
+    opacity: 0.9;
+}
+
+a:hover {
+    color: var(--color-text-headings);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.custom-btn-transition:hover {
+    transform: scale(1.05);
+    opacity: 1;
+}
+
+.intro-row {
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.auth-left-container {
+    background-image: url('../src/assets/loginImg.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100%;
+}
+
+.spinner-color {
+    color: var(--color-text-headings) !important;
+}

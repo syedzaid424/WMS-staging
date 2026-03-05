@@ -1,0 +1,54 @@
+/* Change icon color */
+.ant-menu-dark .ant-menu-item-selected .ant-menu-item-icon {
+    color: var(--color-accent) !important;
+}
+
+/* Right side indicator */
+.ant-menu-dark .ant-menu-item-selected::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 20%;
+    height: 60%;
+    width: 4px;
+    background-color: var(--color-accent);
+    border-radius: 4px 0 0 4px;
+}
+
+.ant-menu-item {
+    transition: all 0.2s ease;
+}
+
+.layout-icon {
+    color: var(--color-accent);
+}
+
+.warehouse-select-input.ant-select.ant-select-outlined {
+    background-color: var(--color-text-headings) !important;
+    color: var(--color-text-light) !important;
+    box-shadow: none !important;
+}
+
+.warehouse-select-input.ant-select.ant-select-outlined .ant-select-placeholder,
+.warehouse-select-input.ant-select.ant-select-outlined .ant-select-suffix {
+    color: var(--color-text-light) !important;
+    opacity: 0.5;
+}
+
+.warehouse-select-input.ant-select .ant-select-input{
+    color: var(--color-text-light) !important;
+    font-weight: 300 !important;
+}
+
+
+
+.warehouse-select-input.ant-select .ant-select-selection-search-input {
+    color: var(--color-text-light) !important;
+    font-weight: 300 !important;
+}
+
+/* Also ensure selected value text is visible */
+.warehouse-select-input.ant-select .ant-select-selection-item {
+    color: var(--color-text-light) !important;
+    font-weight: 300 !important;
+}
