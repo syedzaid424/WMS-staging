@@ -101,7 +101,7 @@ interface DynamicFormProps {
     loading?: boolean;
     submitText?: string;
     onSubmit: (data: any) => Promise<boolean> | boolean;
-
+    submitBtnDisable?: boolean
 }
 
 /* ================= COMPONENT ================= */
@@ -114,6 +114,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     loading,
     submitText = "Submit",
     onSubmit,
+    submitBtnDisable = false
 }) => {
     /* ---------- validation ---------- */
 
@@ -424,6 +425,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                     <AppButton
                         htmlType="submit"
                         loading={loading}
+                        disabled={submitBtnDisable}
                     >
                         {submitText}
                     </AppButton>

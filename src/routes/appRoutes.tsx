@@ -10,7 +10,7 @@ const Dashboard = lazy(() => import('../app/main/dashboard/index'));
 const Contact = lazy(() => import('../app/main/contact/index'));
 const Order = lazy(() => import('../app/main/order/index'));
 const Item = lazy(() => import('../app/main/item/index'));
-const ItemDetails = lazy(() => import('../app/main/item/itemDetails/index'));
+const ItemDetails = lazy(() => import('../app/main/item/components/itemDetails'));
 const Inventory = lazy(() => import('../app/main/inventory/index'))
 const Location = lazy(() => import('../app/main/location/index'))
 const StockWarnings = lazy(() => import('../app/main/inventory/index'));

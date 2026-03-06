@@ -62,6 +62,7 @@ const apiRoutes = {
     'CREATE_ITEM': '/item',
     'GET_ITEM': '/item/by',
     'GET_ITEMS': '/item/paginated',
+    'GET_LOCATION_OF_ITEM': '/inventory/by',
     // GENERAL
     'GET_QR_CODE': '/qr-bar-code-generator/qr'
 }

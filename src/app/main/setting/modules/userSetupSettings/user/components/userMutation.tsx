@@ -22,7 +22,7 @@ const UserMutation = () => {
     const formType = searchParams.get('type') || undefined;
     // Get the state passed during navigation
     const state = location.state || {};
-    console.log(state)
+
     // warehouse listing for select.
     const {
         options: availableWarehouses,

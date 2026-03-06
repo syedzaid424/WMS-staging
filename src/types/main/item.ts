@@ -92,6 +92,33 @@ interface ItemDetails {
     updatedBy: string | null;
 }
 
+interface InventoryItem {
+    inventoryId: number;
+    itemId: number;
+    locationId: number;
+    warehouseId: number;
+    warehouseName: string;
+    itemSku: string;
+    itemCode: string;
+    itemName: string;
+    itemImageUrl: string;
+    locationCode: string;
+    locationName: string;
+    quantity: number;
+    damagedQuantity: number;
+    reservedQuantity: number;
+}
+
+interface ItemLocationRow extends InventoryItem { }
+
+interface ItemLocationsListData {
+    pageNo: number;
+    pageSize: number;
+    totalElements: number;
+    totalPages: number;
+    inventories: InventoryItem[];
+}
+
 export type {
     ItemCategoryFormValues,
     ItemTagFormValues,
@@ -99,5 +126,7 @@ export type {
     ItemTagRow,
     ItemsListData,
     ItemRow,
-    ItemDetails
+    ItemDetails,
+    ItemLocationsListData,
+    ItemLocationRow
 }

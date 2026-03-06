@@ -45,7 +45,7 @@ const LoginForm = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6! w-full md:w-3/6 mx-auto">
             {/* Email */}
             <div className="w-full mx-auto flex flex-col gap-1">
-                <AppText className="block mb-1 font-medium tracking-wide label-color">Username*</AppText>
+                <AppText className="block mb-1 font-medium tracking-wide label-color">Email*</AppText>
                 <Controller
                     name="email"
                     control={control}

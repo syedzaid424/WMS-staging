@@ -7,7 +7,6 @@ import dayjs from "dayjs";
 import AppButton from "../../../../components/button";
 import { EditOutlined } from "@ant-design/icons";
 import AppImage from "../../../../components/image";
-import { FaEye } from "react-icons/fa6";
 import { useNavigate } from "react-router";
 import { appRoutes } from "../../../../utils/constants";
 
@@ -15,13 +14,9 @@ const useItemColumns = () => {
 
     const navigate = useNavigate();
 
-    const handleEdit = (record: any) => {
-        console.log(record)
-     }
-
     // to generate QR code.
     const handleItemDetails = async (record: ItemRow) => {
-        navigate(`${appRoutes.ITEM_DETAILS}/${record?.code}`)
+        navigate(`${appRoutes.ITEM_DETAILS}/${record?.code}?type=edit`)
     }
 
     const itemColumns = useMemo<ColumnsType<ItemRow>>(() => (
@@ -102,13 +97,6 @@ const useItemColumns = () => {
                         <AppButton
                             type="text"
                             icon={<EditOutlined />}
-                            onClick={() => handleEdit(record)}
-                        />
-                        <AppButton
-                            type="text"
-                            title="item details"
-                            className="pointer-events-none"
-                            icon={<FaEye />}
                             onClick={() => handleItemDetails(record)}
                         />
                     </div>

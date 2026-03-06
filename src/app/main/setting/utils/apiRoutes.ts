@@ -14,7 +14,8 @@ const settingApiRoute = {
     getItemTags: apiRoutes.GET_ITEM_TAGS,
     createItemCategory: apiRoutes.CREATE_ITEM_CATEGORY,
     createItemTag: apiRoutes.CREATE_ITEM_TAG,
-    createItem: apiRoutes.CREATE_ITEM
+    createItem: apiRoutes.CREATE_ITEM,
+    getLocationsOfItem: apiRoutes.GET_LOCATION_OF_ITEM
 }
 
 export {

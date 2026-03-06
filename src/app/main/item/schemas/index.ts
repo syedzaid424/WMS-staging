@@ -33,6 +33,21 @@ const itemCreationSchema = {
         .required("Length is required"),
 }
 
+const itemEditSchema = {
+    sku: yup.string().required("SKU is required"),
+    code: yup.string().required("Code is required"),
+    name: yup.string().required("Product name is required"),
+    description: yup.string().required("Description is required"),
+    categoryId: yup.number()
+        .typeError("Category is required")
+        .required("Category is required"),
+    image: yup.array()
+        .min(1, "Product image is required")
+        .required("Product image is required")
+}
+
+
 export {
-    itemCreationSchema
+    itemCreationSchema,
+    itemEditSchema
 }
