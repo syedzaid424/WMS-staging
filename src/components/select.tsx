@@ -1,5 +1,6 @@
 import { Select } from "antd";
 import type { SelectProps, DefaultOptionType } from "antd/es/select";
+import { useMemo } from "react";
 
 type SearchMode = "local" | "remote";
 
@@ -41,7 +42,8 @@ function AppSelect<
     console.log(options)
 
     /** merge + dedupe */
-    const mergedOptions = (() => {
+    // ✅ Memoized — only recalculates when options or hydratedOptions actually change
+    const mergedOptions = useMemo(() => {
         if (!hydratedOptions?.length) return options as OptionType[];
 
         const map = new Map<any, OptionType>();
@@ -57,7 +59,7 @@ function AppSelect<
         });
 
         return Array.from(map.values());
-    })();
+    }, [options, hydratedOptions]); // ✅ stable — arrays compared by reference
 
     /** dropdown scroll handler */
     const handlePopupScroll = (e: React.UIEvent<HTMLDivElement>) => {

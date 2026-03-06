@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { message } from "antd";
 import { http } from "../utils/apiConfig";
 
-/* ================= TYPES ================= */
-
 interface BaseApiResponse {
     message?: string;
     status?: string;
@@ -13,23 +11,17 @@ type UseFetchProps<TParams = unknown> = {
     endpoint: string;
     params?: TParams;
     enabled?: boolean;
-    refreshTrigger?: unknown | unknown[]; // allow multiple
+    refreshTrigger?: unknown | unknown[];
     showSuccessMessage?: boolean;
     showErrorMessage?: boolean;
     successMessage?: string;
-    pathParams?: string | number; // /:id
+    pathParams?: string | number;
 };
 
-export const buildUrl = (
-    endpoint: string,
-    pathParams?: number | string
-) => {
+export const buildUrl = (endpoint: string, pathParams?: number | string) => {
     if (!pathParams) return endpoint;
-    let url = endpoint;
-    return url + `/${pathParams}`;
+    return endpoint + `/${pathParams}`;
 };
-
-/* ================= HOOK ================= */
 
 export default function useFetch<TData extends BaseApiResponse = any, TParams = unknown>({
     endpoint,
@@ -45,9 +37,22 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<unknown>(null);
 
-    const refreshDeps = Array.isArray(refreshTrigger) ? refreshTrigger : [refreshTrigger];
+    // Keep latest params in a ref — never stale, never causes re-renders
+    const paramsRef = useRef(params);
+    paramsRef.current = params;
+
+    const showSuccessRef = useRef(showSuccessMessage);
+    showSuccessRef.current = showSuccessMessage;
+
+    const showErrorRef = useRef(showErrorMessage);
+    showErrorRef.current = showErrorMessage;
+
+    const successMessageRef = useRef(successMessage);
+    successMessageRef.current = successMessage;
+
     const firstLoadRef = useRef(true);
 
+    // fetchData is now stable — no object deps, uses refs instead
     const fetchData = useCallback(
         async (overrideParams?: TParams) => {
             if (!endpoint) return;
@@ -56,19 +61,19 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
             setError(null);
 
             try {
-                const finalParams = overrideParams ?? params;
+                const finalParams = overrideParams ?? paramsRef.current;
                 const finalUrl = buildUrl(endpoint, pathParams);
                 const result = await http.get<TData>(finalUrl, finalParams!);
 
                 setData(result);
 
-                if (showSuccessMessage) {
-                    message.success(result?.message || successMessage);
+                if (showSuccessRef.current) {
+                    message.success(result?.message || successMessageRef.current);
                 }
             } catch (err: any) {
                 setError(err);
                 setData(null);
-                if (showErrorMessage) {
+                if (showErrorRef.current) {
                     message.error(err?.message || "Something went wrong");
                 }
             } finally {
@@ -76,7 +81,7 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
                 firstLoadRef.current = false;
             }
         },
-        [endpoint, params, showSuccessMessage, showErrorMessage, successMessage]
+        [endpoint, pathParams] // ✅ only stable primitives — no params object
     );
 
     useEffect(() => {
@@ -85,17 +90,20 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
         }
     }, [enabled, fetchData]);
 
+    // ✅ Re-fetch when params actually change using stable JSON string
+    const paramsKey = JSON.stringify(params);
+    useEffect(() => {
+        if (!firstLoadRef.current && enabled) {
+            fetchData();
+        }
+    }, [paramsKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const refreshDeps = Array.isArray(refreshTrigger) ? refreshTrigger : [refreshTrigger];
     useEffect(() => {
         if (!firstLoadRef.current) {
             fetchData();
         }
-    }, refreshDeps);
+    }, refreshDeps); // eslint-disable-line react-hooks/exhaustive-deps
 
-    return {
-        data,
-        loading,
-        error,
-        refetch: fetchData,
-        setData,
-    };
+    return { data, loading, error, refetch: fetchData, setData };
 }

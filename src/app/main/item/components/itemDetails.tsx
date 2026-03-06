@@ -13,7 +13,7 @@ import { settingApiRoute } from "../../setting/utils/apiRoutes";
 import { itemEditSchema } from "../schemas";
 import AppTable from "../../../../components/table";
 import useInventoryLocationColumns from "../hooks/useInventoryLocationColumns";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IoReturnUpBack } from "react-icons/io5";
 import { appRoutes } from "../../../../utils/constants";
 
@@ -78,13 +78,8 @@ const ItemDetails = () => {
 
     const generalItemInformation = useMemo(() => {
         const { category, ...rest } = data?.data || {};
-        return (
-            {
-                ...rest,
-                categoryId: category?.id
-            }
-        )
-    }, [data?.data]);
+        return { ...rest, categoryId: category?.id }
+    }, [JSON.stringify(data?.data)]);
 
     const { inventoryItemLocationsColumns } = useInventoryLocationColumns();
 
@@ -113,6 +108,14 @@ const ItemDetails = () => {
             page: page,
         }));
     };
+
+    useEffect(() => {
+        console.log("params changed", params);
+    }, [params]);
+
+    useEffect(() => {
+        console.log("generalItemInformation changed", generalItemInformation);
+    }, [generalItemInformation]);
 
     return (
         <Row className="gap-10">
