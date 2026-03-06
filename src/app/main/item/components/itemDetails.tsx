@@ -84,7 +84,7 @@ const ItemDetails = () => {
                 categoryId: category?.id
             }
         )
-    }, [data?.data, availableItemCategories?.data]);
+    }, [data?.data]);
 
     const { inventoryItemLocationsColumns } = useInventoryLocationColumns();
 
