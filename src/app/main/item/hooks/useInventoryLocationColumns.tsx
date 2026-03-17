@@ -2,6 +2,11 @@ import type { ColumnsType } from 'antd/es/table';
 import { useMemo } from 'react'
 import type { ItemLocationRow } from '../../../../types/main/item';
 
+
+// interface UseInventoryLocationColumnsInterface {
+//     adjustmentStock: (record: ItemLocationRow) => void;
+// }
+
 const useInventoryLocationColumns = () => {
 
     const inventoryItemLocationsColumns = useMemo<ColumnsType<ItemLocationRow>>(() => (
@@ -36,7 +41,22 @@ const useInventoryLocationColumns = () => {
                 title: "Reserved Quantity",
                 key: "reservedQuantity",
                 dataIndex: "reservedQuantity",
-            }
+            },
+            // {
+            //     title: "Action",
+            //     key: "action",
+            //     width: 80,
+            //     render: (_, record) => (
+            //         <div className="flex items-center gap-3">
+            //             <AppButton
+            //                 type="text"
+            //                 title='Adjust stock'
+            //                 icon={<HiOutlineAdjustmentsVertical size={21} className='pt-1' />}
+            //                 onClick={() => adjustmentStock(record)}
+            //             />
+            //         </div>
+            //     ),
+            // },
         ]
     ), []);
 

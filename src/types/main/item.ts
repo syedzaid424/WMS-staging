@@ -119,6 +119,16 @@ interface ItemLocationsListData {
     inventories: InventoryItem[];
 }
 
+interface ItemStockAdjustmentPayload {
+    quantity: number;
+    locationCode: string;
+    onHandQty: number;
+    reservedQuantity: number;
+    availableQty: number;
+    type: 'INCREASE' | 'DECREASE' | "SET"; // adjust if more types exist
+    remark?: string;
+}
+
 export type {
     ItemCategoryFormValues,
     ItemTagFormValues,
@@ -128,5 +138,6 @@ export type {
     ItemRow,
     ItemDetails,
     ItemLocationsListData,
-    ItemLocationRow
+    ItemLocationRow,
+    ItemStockAdjustmentPayload
 }

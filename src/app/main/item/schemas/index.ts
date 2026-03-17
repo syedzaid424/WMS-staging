@@ -12,7 +12,7 @@ const itemCreationSchema = {
         .of(yup.number())
         .min(1, "Select at least one tag")
         .required("Tags are required"),
-    image: yup.array()
+    imageUrl: yup.array()
         .min(1, "Product image is required")
         .required("Product image is required"),
     weight: yup.number()
@@ -41,13 +41,18 @@ const itemEditSchema = {
     categoryId: yup.number()
         .typeError("Category is required")
         .required("Category is required"),
-    image: yup.array()
+    imageUrl: yup.array()
         .min(1, "Product image is required")
         .required("Product image is required")
 }
 
+const adjustmentStockShema = {
+    locationCode: yup.string().required("Location code is required"),
+    quantity: yup.number().required("Qty is required"),
+}
 
 export {
     itemCreationSchema,
-    itemEditSchema
+    itemEditSchema,
+    adjustmentStockShema
 }

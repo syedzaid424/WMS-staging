@@ -24,7 +24,7 @@ const warehouseColumns: ColumnsType<WarehouseRow> = [
     dataIndex: "description",
     key: "description",
     render: (val) => (
-      <span className="block max-w-[400px] break-words">
+      <span className="block max-w-100 wrap-break-word">
         {val || "-"}
       </span>),
   },

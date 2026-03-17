@@ -25,6 +25,8 @@ const LocationSettings = lazy(() => import('../app/main/setting/modules/location
 const ItemSettings = lazy(() => import('../app/main/setting/modules/itemSettings'));
 const UserSetup = lazy(() => import('../app/main/setting/modules/userSetupSettings'));
 const UserMutation = lazy(() => import('../app/main/setting/modules/userSetupSettings/user/components/userMutation'));
+const ImportExportLocations = lazy(() => import('../app/main/import-export/locations/index'));
+const ImportExportItems = lazy(() => import('../app/main/import-export/items/index'));
 
 const AppRoutes = () => {
     return (
@@ -52,6 +54,8 @@ const AppRoutes = () => {
                     <Route path={appRoutes.SETTINGS_USERS_SETUP} element={<UserSetup />} />
                     <Route path={appRoutes.SETTINGS_USERS_CREATE} element={<UserMutation />} />
                     <Route path={appRoutes.SETTINGS_USERS_EDIT} element={<UserMutation />} />
+                    <Route path={appRoutes.IMPORT_EXPORT_LOCATIONS} element={<ImportExportLocations />} />
+                    <Route path={appRoutes.IMPORT_EXPORT_ITEMS} element={<ImportExportItems />} />
                     <Route path="*" element={<Navigate to="/dashboard" />} />
                 </Route>
             </Routes>

@@ -16,6 +16,7 @@ import AppButton from "./button";
 import AppSelect from "./select";
 import type { UploadFile, UploadProps } from "antd";
 import { UploadOutlined, InboxOutlined } from "@ant-design/icons";
+import AppImage from "./image";
 
 /* ================= TYPES ================= */
 
@@ -104,6 +105,8 @@ interface DynamicFormProps {
     submitBtnDisable?: boolean
 }
 
+const EMPTY_OPTIONS: DefaultOptionType[] = [];
+
 /* ================= COMPONENT ================= */
 
 const DynamicForm: React.FC<DynamicFormProps> = ({
@@ -131,6 +134,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         return values;
     }, [fields]);
 
+    console.log(fields)
+
     const {
         control,
         handleSubmit,
@@ -145,6 +150,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
     useEffect(() => {
         if (type === "edit" && editData) {
+            console.log(editData)
             reset(editData);
         }
     }, [type, editData, reset]);
@@ -243,8 +249,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                                         style={{ width: "100%" }}
                                     >
                                         <AppSelect
-                                            options={field.options as DefaultOptionType[]}
-                                            hydratedOptions={field?.selectedOptionsFromBackend as DefaultOptionType[]}
+                                            options={(field.options ?? EMPTY_OPTIONS) as DefaultOptionType[]}
+                                            hydratedOptions={(field?.selectedOptionsFromBackend ?? EMPTY_OPTIONS) as DefaultOptionType[]}
                                             value={rhfField.value}
                                             onChange={(val) => rhfField.onChange(val)}
                                             onBlur={rhfField.onBlur}
@@ -260,6 +266,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                                             hasMore={field.hasMore}
                                             showSearch={field?.showSearch}
                                             mode={field?.mode}
+                                            defaultValue={field?.defaultValue}
+                                            loading={field?.loading}
                                         />
                                     </Form.Item>
                                 );
@@ -300,90 +308,119 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
                             /* ---------- UPLOAD ---------- */
                             case "upload": {
-                                /**
-                                 * Shared Upload props wired to React Hook Form.
-                                 *
-                                 * `beforeUpload` defaults to `() => false` which prevents Ant Design
-                                 * from auto-posting the file to a non-existent endpoint while still
-                                 * adding it to the fileList so we can read it later.
-                                 *
-                                 * The RHF value is kept as an `UploadFile[]` array. Callers can
-                                 * access the raw File via `fileList[0].originFileObj`.
-                                 */
                                 const fileList: UploadFile[] = Array.isArray(rhfField.value)
                                     ? rhfField.value
                                     : rhfField.value
                                         ? [rhfField.value]
                                         : [];
 
+                                // Detect if current value is a plain URL string (edit initial state)
+                                // vs an UploadFile array (user has interacted with the uploader)
+                                const isUrlOnly = typeof rhfField.value === "string";
+
+                                // Preview src resolution:
+                                // 1. Plain URL string from editData  → use directly
+                                // 2. UploadFile with .url            → edit seeded file, use url
+                                // 3. UploadFile with .originFileObj  → user picked a new file, blob it
+                                const previewFile = fileList[0];
+                                const previewSrc = isUrlOnly
+                                    ? rhfField.value
+                                    : previewFile?.url
+                                    || (previewFile?.originFileObj
+                                        ? URL.createObjectURL(previewFile.originFileObj)
+                                        : null);
+
                                 const sharedUploadProps: UploadProps = {
-                                    fileList,
+                                    fileList: isUrlOnly ? [] : fileList, // don't pass URL string into fileList
                                     accept: field.accept,
                                     maxCount: field.maxCount ?? 1,
                                     multiple: field.multiple ?? false,
                                     disabled: field.readOnly ?? field.disabled,
-                                    beforeUpload: field.beforeUpload ?? (() => false), // prevent auto-upload
+                                    beforeUpload: field.beforeUpload ?? (() => false),
+                                    showUploadList: true,
                                     onChange: (info) => {
-                                        // Keep only the latest slice respecting maxCount
                                         const max = field.maxCount ?? 1;
                                         const next = info.fileList.slice(-max);
-                                        rhfField.onChange(next);
+                                        rhfField.onChange(next); // now RHF holds UploadFile[], not string
                                         field.onUploadChange?.(info);
                                     },
-                                    onRemove: (file) => {
-                                        const next = fileList.filter((f) => f.uid !== file.uid);
-                                        rhfField.onChange(next);
+                                    onRemove: () => {
+                                        // When user removes the new file, revert to original URL
+                                        rhfField.onChange(rhfField.value); // no-op if already cleared
+                                        const next = fileList.filter((f) => f.uid !== previewFile?.uid);
+                                        rhfField.onChange(next.length ? next : undefined);
                                     },
                                 };
 
-                                if (field.uploadVariant === "dragger") {
-                                    return (
-                                        <Form.Item
-                                            label={field.label}
-                                            validateStatus={fieldState.error ? "error" : ""}
-                                            help={fieldState.error?.message}
-                                        >
-                                            <Upload.Dragger
-                                                {...sharedUploadProps}
-                                                className={field.inputClassName}
-                                            >
-                                                <p className="ant-upload-drag-icon">
-                                                    <InboxOutlined />
-                                                </p>
-                                                <p className="ant-upload-text">
-                                                    {field.uploadText ?? "Click or drag file to this area to upload"}
-                                                </p>
-                                                {field.uploadHint && (
-                                                    <p className="ant-upload-hint">{field.uploadHint}</p>
-                                                )}
-                                            </Upload.Dragger>
-                                        </Form.Item>
-                                    );
-                                }
+                                const UPLOAD_HEIGHT = 140;
+                                const PREVIEW_WIDTH = 140;
 
-                                // Default: button variant
+                                const uploader = field.uploadVariant === "dragger" ? (
+                                    <Upload.Dragger
+                                        {...sharedUploadProps}
+                                        className={field.inputClassName}
+                                        style={{ height: UPLOAD_HEIGHT }}  // force dragger height
+                                    >
+                                        <p className="ant-upload-drag-icon"><InboxOutlined /></p>
+                                        <p className="ant-upload-text">
+                                            {field.uploadText ?? "Click or drag file to this area to upload"}
+                                        </p>
+                                        {field.uploadHint && (
+                                            <p className="ant-upload-hint">{field.uploadHint}</p>
+                                        )}
+                                    </Upload.Dragger>
+                                ) : (
+                                    <Upload {...sharedUploadProps} className={field.inputClassName}>
+                                        <AppButton
+                                            icon={<UploadOutlined />}
+                                            size="large"
+                                            disabled={field.readOnly ?? field.disabled}
+                                        >
+                                            {field.uploadText ?? "Click to Upload"}
+                                        </AppButton>
+                                    </Upload>
+                                );
+
                                 return (
                                     <Form.Item
                                         label={field.label}
                                         validateStatus={fieldState.error ? "error" : ""}
                                         help={fieldState.error?.message}
                                     >
-                                        <Upload
-                                            {...sharedUploadProps}
-                                            className={field.inputClassName}
-                                        >
-                                            <AppButton
-                                                icon={<UploadOutlined />}
-                                                size="large"
-                                                disabled={field.readOnly ?? field.disabled}
-                                            >
-                                                {field.uploadText ?? "Click to Upload"}
-                                            </AppButton>
-                                        </Upload>
+                                        <div className="flex items-start gap-4">
+
+                                            {/* Dragger wrapper — fixed height, fills remaining width */}
+                                            <div className="flex-1" style={{ height: UPLOAD_HEIGHT }}>
+                                                {uploader}
+                                            </div>
+
+                                            {/* Preview — fixed width + height, never shifts */}
+                                            {previewSrc && (
+                                                <div
+                                                    style={{
+                                                        width: PREVIEW_WIDTH,
+                                                        height: UPLOAD_HEIGHT,
+                                                        flexShrink: 0,
+                                                        borderRadius: 8,
+                                                        border: "1px solid #e5e7eb",
+                                                        overflow: "hidden",
+                                                    }}
+                                                >
+                                                    <AppImage
+                                                        src={previewSrc}
+                                                        width="100%"
+                                                        style={{
+                                                            height: UPLOAD_HEIGHT,
+                                                            objectFit: "cover",
+                                                            display: "block",
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
                                     </Form.Item>
                                 );
                             }
-
 
                             /* ---------- CUSTOM ---------- */
                             case "custom":

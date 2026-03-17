@@ -11,8 +11,12 @@ import { settingApiRoute } from '../../setting/utils/apiRoutes'
 import { itemCreationSchema } from '../schemas'
 import type { ItemCategoryRow, ItemTagRow } from '../../../../types/main/item'
 import useFetch from '../../../../hooks/useFetch'
+import { useImageUploader } from '../../../../hooks/useImageUploader'
 
 const CreateItem = () => {
+
+    // to upload image.
+    const { loading: imgUploadLoader, imageUploader } = useImageUploader();
 
     // to generate item category listing.
     const { loading: itemCategoryLoading, data: availableItemCategories } = useFetch<ApiResponse<ItemCategoryRow[]>>({
@@ -46,10 +50,19 @@ const CreateItem = () => {
 
     const handleMutation = async (data: any) => {
         let payload = data;
-        const { image: imageObj, ...rest } = payload;
+        let imgURL;
+        if (data?.imageUrl) {
+            const imageObject = data.imageUrl[0]?.originFileObj;
+            const formData = new FormData();
+            formData.append("file", imageObject);
+            imgURL = await imageUploader(formData);
+            if (!imgURL?.data) {
+                return false   // means no url is been returned from backend on upload.
+            }
+        }
         payload = {
-            ...rest,
-            image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            ...data,
+            imageUrl: imgURL?.data
         }
         let res = await mutate(payload);
         if (res?.status == "200") {
@@ -59,7 +72,6 @@ const CreateItem = () => {
             return false
         }
     }
-
 
     return (
         <Row className="gap-5">
@@ -79,7 +91,7 @@ const CreateItem = () => {
                 <DynamicForm
                     type={"create"}
                     submitText={"Create Item"}
-                    loading={loading}
+                    loading={loading || imgUploadLoader}
                     fields={formFields}
                     validationSchema={itemCreationSchema}
                     onSubmit={handleMutation}

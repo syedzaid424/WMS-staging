@@ -13,9 +13,12 @@ import { settingApiRoute } from "../../setting/utils/apiRoutes";
 import { itemEditSchema } from "../schemas";
 import AppTable from "../../../../components/table";
 import useInventoryLocationColumns from "../hooks/useInventoryLocationColumns";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { IoReturnUpBack } from "react-icons/io5";
 import { appRoutes } from "../../../../utils/constants";
+import { useImageUploader } from "../../../../hooks/useImageUploader";
+import StockManagementModal from "./stockManagementModal";
+import AddStockLocationModal from "./addStockLocationModal";
 
 
 const ItemDetails = () => {
@@ -23,12 +26,19 @@ const ItemDetails = () => {
     const { id } = useParams();
     const [searchParams] = useSearchParams();
     const activeType = searchParams.get("type") || "create";
+    const { imageUploader } = useImageUploader();
 
     const [pagination, setPagination] = useState({
         page: 1,
         pageSize: 10,
         total: 0,
     });
+
+    const [adjustmentStockModalState, setAdjustmentStockModalState] = useState(false);
+    const adjustmentStockModalRecordRef = useRef<null | ItemLocationRow>(null);
+    const [refreshStockLocationListing, setRefreshStockLocationListing] = useState(0);
+
+    const [newLocationModalState, setNewLocationModalState] = useState(false);
 
     const params = useMemo(
         () => ({
@@ -39,7 +49,7 @@ const ItemDetails = () => {
         [pagination.page, pagination.pageSize, id]
     );
 
-    // to generate Locations listing.
+    // to fetch item details.
     const { loading, data } = useFetch<ApiResponse<ItemDetails>>({
         endpoint: itemApiRoutes.getItem,
         pathParams: id,
@@ -63,6 +73,7 @@ const ItemDetails = () => {
     const { loading: itemLocationsLoading, data: itemLocationRecords } = useFetch<ApiResponse<ItemLocationsListData>>({
         endpoint: settingApiRoute.getLocationsOfItem,
         params,
+        refreshTrigger: refreshStockLocationListing,
         showSuccessMessage: false
     })
 
@@ -76,21 +87,38 @@ const ItemDetails = () => {
         activeType
     });
 
+    // mutating general item detail data for edit.
     const generalItemInformation = useMemo(() => {
         const { category, ...rest } = data?.data || {};
         return { ...rest, categoryId: category?.id }
     }, [JSON.stringify(data?.data)]);
 
+
+    // to open a modal for adjustment of stock against an item on a specific location.
+    // const adjustmentStock = (record: ItemLocationRow) => {
+    //     adjustmentStockModalRecordRef.current = record;
+    //     setAdjustmentStockModalState(true);
+    // }
+
     const { inventoryItemLocationsColumns } = useInventoryLocationColumns();
 
     const handleMutation = async (data: any) => {
-        console.log(data)
         let payload = data;
-        const { image: imageObj, ...rest } = payload;
-        payload = {
-            ...rest,
-            image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        let imgURL;
+        if (data?.imageUrl) {
+            const imageObject = data.imageUrl[0]?.originFileObj;
+            const formData = new FormData();
+            formData.append("file", imageObject);
+            imgURL = await imageUploader(formData);
+            if (!imgURL?.data) {
+                return false   // means no url is been returned from backend on upload.
+            }
         }
+        payload = {
+            ...data,
+            imageUrl: imgURL?.data
+        }
+        console.log(payload)
         return true
         // let res = await mutate(payload);
         // if (res?.status == "200") {
@@ -101,21 +129,15 @@ const ItemDetails = () => {
         // }
     }
 
+
     const handlePageChange = (page: number) => {
-        // fetchLocationTypes(page, pageSize);
         setPagination((prev) => ({
             ...prev,
             page: page,
         }));
     };
 
-    useEffect(() => {
-        console.log("params changed", params);
-    }, [params]);
-
-    useEffect(() => {
-        console.log("generalItemInformation changed", generalItemInformation);
-    }, [generalItemInformation]);
+    // const actionHandler = () => { }
 
     return (
         <Row className="gap-10">
@@ -143,17 +165,26 @@ const ItemDetails = () => {
                                     validationSchema={itemEditSchema}
                                     onSubmit={handleMutation}
                                     editData={generalItemInformation}
-                                    submitBtnDisable={true}
                                 />
                             </div>
                     }
                 </div>
             </Col>
+
             {/* location listing against item */}
             <Col span={24} className="item-details-card py-4 px-5 rounded-md">
-                <div className=" bg-[#F5F6FA] py-4 px-5 rounded-md">
-                    <AppTitle level={4}>Stock Location Information</AppTitle>
-                </div>
+                <Row className=" bg-[#F5F6FA] py-4 px-5 rounded-md" justify="space-between">
+                    <div className="flex items-center gap-4">
+                        <Link to={appRoutes.ITEM}>
+                            <IoReturnUpBack size={25} className="primary-color cursor-pointer" />
+                        </Link>
+                        <AppTitle level={4}>Stock Location Information</AppTitle>
+                    </div>
+                    {/* <AppButton onClick={actionHandler} disabled={itemLocationsLoading}>
+                        <IoIosAdd size={23} />
+                        Add Stock Location
+                    </AppButton> */}
+                </Row>
                 <div className="py-6 px-5">
                     {
                         itemLocationsLoading ?
@@ -187,6 +218,20 @@ const ItemDetails = () => {
                     }
                 </div>
             </Col>
+
+            {/* stock management modal */}
+            <StockManagementModal
+                adjustmentStockModalState={adjustmentStockModalState}
+                adjustmentStockRecord={adjustmentStockModalRecordRef.current}
+                setAdjustmentStockModalState={setAdjustmentStockModalState}
+                setRefreshStockLocationListing={setRefreshStockLocationListing}
+            />
+
+            {/* add stock location modal */}
+            <AddStockLocationModal
+                newLocationModalState={newLocationModalState}
+                setNewLocationModalState={setNewLocationModalState}
+            />
         </Row>
     )
 }

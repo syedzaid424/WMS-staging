@@ -1,5 +1,5 @@
 import { Col, Row } from 'antd'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import AppTitle from '../../../components/title'
 import AppButton from '../../../components/button'
 import AppTable from '../../../components/table'
@@ -40,6 +40,15 @@ const Items = () => {
     showSuccessMessage: false
   });
 
+  useEffect(() => {
+    if (!data) return;
+    const apiData = data.data;
+    setPagination((prev) => ({
+      ...prev,
+      total: apiData?.totalElements || 0,
+    }));
+  }, [data]);
+
   // const handleEdit = (record: any) => {
   //   console.log(record)
   // };
@@ -54,6 +63,8 @@ const Items = () => {
       page: page,
     }));
   };
+
+  console.log(pagination)
 
   return (
     <Row className="gap-5 w-full">

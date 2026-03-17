@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import type { FieldType, ModeType } from '../../../../../../../components/dynamicForm'
 import type { SelectInterface } from '../../../../../../../utils/types';
 import type { RoleListingResponse, UserRow } from '../../../../../../../types/main/user';
@@ -25,32 +25,28 @@ const useUserMutationFormHook = ({
     formType = "create"
 }: UserMutationFormHook) => {
 
-    const [availableRolesListing, setAvailableRolesListing] = useState<SelectInterface[]>([]);
-    const [selectedWarehouseOptionsFromBackend, setSelectedWarehouseOptionsFromBackend] = useState<SelectInterface[]>([]);
 
-    // to set warehouse listing.
-    useEffect(() => {
-        if (availableRoles && availableRoles?.length > 0) {
-            const items = availableRoles.map((role) => ({
-                label: role.name,
-                value: role.id
-            }));
-            setAvailableRolesListing(items);
-        }
-    }, [availableRoles]);
+    const availableRolesListing = useMemo<SelectInterface[]>(() =>
+        availableRoles?.map((role) => ({
+            label: role.name,
+            value: role.id
+        })) ?? [],
+        [availableRoles]
+    );
 
-    useEffect(() => {
+    const selectedWarehouseOptionsFromBackend = useMemo<SelectInterface[]>(() => {
         if (editResponseState && editResponseState?.warehouseIds?.length > 0) {
             const items = editResponseState?.warehouseIds?.map((warehouses) => ({
                 label: warehouses.label,
                 value: warehouses.value
             }));
-            setSelectedWarehouseOptionsFromBackend(items)
+            return items
         }
-    }, [editResponseState]);
-
-    console.log(availableWarehouses);
-    console.log(selectedWarehouseOptionsFromBackend)
+        else {
+            return []
+        }
+    }
+        , [editResponseState])
 
     return formType == "create" ?
         [

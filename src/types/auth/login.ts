@@ -21,9 +21,10 @@ interface AuthResponse {
 interface AuthStoreState {
     user: AuthResponse | null;
     accessToken: string | null;
+    refreshToken: string | null;
     isAuthenticated: boolean;
 
-    setLogin: (user: AuthResponse, token: string, fromBroadcast?: boolean) => void;
+    setLogin: (user: AuthResponse, token: string, refreshToken: string, fromBroadcast?: boolean) => void;
     setLogout: (fromBroadcast?: boolean) => void;
     setUser: (user: AuthResponse) => void;
 };

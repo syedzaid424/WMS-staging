@@ -77,16 +77,13 @@ export function useMutation<
 
             try {
                 const isAdvancedObject = isMutationVariables<TBody>(variables);
-
                 const body: TBody | undefined = isAdvancedObject
                     ? variables.data
                     : (variables as TBody | undefined);
 
                 const queryParams = isAdvancedObject ? variables.params : undefined;
                 const pathParams = isAdvancedObject ? variables.pathParams : undefined;
-                console.log(pathParams)
                 const finalUrl = buildUrl(endpoint, pathParams);
-                console.log(finalUrl)
                 const config = queryParams ? queryParams : undefined;
 
                 let result: TData;
@@ -143,8 +140,6 @@ export function useMutation<
         },
         [endpoint, method, showSuccessMessage, showErrorMessage, successMessage]
     );
-
-
 
     return {
         data,

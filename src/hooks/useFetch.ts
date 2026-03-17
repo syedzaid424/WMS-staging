@@ -64,7 +64,7 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
                 const finalParams = overrideParams ?? paramsRef.current;
                 const finalUrl = buildUrl(endpoint, pathParams);
                 const result = await http.get<TData>(finalUrl, finalParams!);
-
+                console.log(result)
                 setData(result);
 
                 if (showSuccessRef.current) {
@@ -81,7 +81,7 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
                 firstLoadRef.current = false;
             }
         },
-        [endpoint, pathParams] // ✅ only stable primitives — no params object
+        [endpoint, pathParams] // only stable primitives — no params object
     );
 
     useEffect(() => {
@@ -90,7 +90,7 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
         }
     }, [enabled, fetchData]);
 
-    // ✅ Re-fetch when params actually change using stable JSON string
+    // Re-fetch when params actually change using stable JSON string
     const paramsKey = JSON.stringify(params);
     useEffect(() => {
         if (!firstLoadRef.current && enabled) {

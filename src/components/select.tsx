@@ -31,7 +31,7 @@ function AppSelect<
     onLoadMore,
     hasMore,
     setDropdownRef,
-    options = [],
+    options,
     hydratedOptions,
     loading,
     placeholder,
@@ -44,15 +44,15 @@ function AppSelect<
     /** merge + dedupe */
     // ✅ Memoized — only recalculates when options or hydratedOptions actually change
     const mergedOptions = useMemo(() => {
-        if (!hydratedOptions?.length) return options as OptionType[];
+        if (!options?.length && !hydratedOptions?.length) return [];
 
         const map = new Map<any, OptionType>();
 
-        hydratedOptions.forEach(opt => {
+        hydratedOptions?.forEach(opt => {
             if (opt?.value != null) map.set(opt.value, opt);
         });
 
-        (options as OptionType[]).forEach(opt => {
+        (options ?? []).forEach(opt => {   //safe fallback only here
             if (opt?.value != null && !map.has(opt.value)) {
                 map.set(opt.value, opt);
             }
@@ -60,6 +60,8 @@ function AppSelect<
 
         return Array.from(map.values());
     }, [options, hydratedOptions]); // ✅ stable — arrays compared by reference
+
+    console.log(mergedOptions)
 
     /** dropdown scroll handler */
     const handlePopupScroll = (e: React.UIEvent<HTMLDivElement>) => {

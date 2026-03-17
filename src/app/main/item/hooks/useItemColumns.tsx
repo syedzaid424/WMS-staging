@@ -51,6 +51,10 @@ const useItemColumns = () => {
                 title: "Name",
                 dataIndex: "name",
                 key: "name",
+                render: (val) => (
+                    <span className="block max-w-80 wrap-break-word">
+                        {val || "-"}
+                    </span>),
             },
             {
                 title: "Category Name",
@@ -61,7 +65,10 @@ const useItemColumns = () => {
                 title: "Description",
                 dataIndex: "description",
                 key: "description",
-                render: (val) => val || "-",
+                render: (val) => (
+                    <span className="block max-w-80 wrap-break-word">
+                        {val || "-"}
+                    </span>),
             },
             {
                 title: "Qty on Hand",

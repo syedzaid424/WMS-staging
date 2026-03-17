@@ -8,43 +8,30 @@ export const useAuthStore = create<AuthStoreState>()(
         (set) => ({
             user: null,
             accessToken: null,
+            refreshToken: null,
             isAuthenticated: false,
 
-            setLogin: (user, token, fromBroadcast = false) => {
-                set({
-                    user,
-                    accessToken: token,
-                    isAuthenticated: true,
-                });
+            setLogin: (user, accessToken, refreshToken, fromBroadcast = false) => {
+                set({ user, accessToken, refreshToken, isAuthenticated: true });
 
                 if (!fromBroadcast) {
                     authChannel.postMessage({
                         type: "LOGIN",
-                        payload: { user, accessToken: token },
+                        payload: { user, accessToken, refreshToken },
                     });
                 }
             },
 
             setLogout: (fromBroadcast = false) => {
-                set({
-                    user: null,
-                    accessToken: null,
-                    isAuthenticated: false,
-                });
+                set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
 
                 if (!fromBroadcast) {
                     authChannel.postMessage({ type: "LOGOUT" });
                 }
             },
 
-            setUser: (user) =>
-                set((state) => ({
-                    ...state,
-                    user,
-                })),
+            setUser: (user) => set((state) => ({ ...state, user })),
         }),
-        {
-            name: "auth-storage", // localStorage key
-        }
+        { name: "auth-storage" }
     )
 );

@@ -75,10 +75,13 @@ const AppLayout = () => {
 
     useEffect(() => {
         if (location.pathname) {
+            console.log(location.pathname)
+            console.log(routePrefix.find(route => location.pathname.startsWith(route)) || location.pathname)
             setActiveTab(() => routePrefix.find(route => location.pathname.startsWith(route)) || location.pathname)
         }
     }, [location.pathname])
 
+    console.log(activeTab)
 
     const handleMenuClick: MenuProps['onClick'] = (e) => {
         switch (e.key) {

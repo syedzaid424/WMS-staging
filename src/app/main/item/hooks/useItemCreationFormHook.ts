@@ -1,7 +1,7 @@
 import type { FieldType, ModeType, UploadVariant } from '../../../../components/dynamicForm'
 import { message, Upload } from "antd";
 import type { SelectInterface } from '../../../../utils/types';
-import { useMemo } from 'react';  // ✅ removed useEffect, useState
+import { useMemo } from 'react';
 import type { ItemCategoryRow, ItemTagRow } from '../../../../types/main/item';
 
 interface ItemCreationFormHook {
@@ -12,7 +12,7 @@ interface ItemCreationFormHook {
     activeType?: string
 }
 
-// ✅ Stable — defined once outside the hook, never recreated
+// Stable — defined once outside the hook, never recreated
 const beforeUpload = (file: any) => {
     const isImage = file.type.startsWith("image/");
     const isUnder5MB = file.size / 1024 / 1024 < 1;
@@ -29,9 +29,7 @@ const useItemCreationFormHook = ({
     activeType = "create"
 }: ItemCreationFormHook) => {
 
-    // ✅ Bug 1 fixed: replaced useState + useEffect with useMemo
-    // useState + useEffect caused an extra render cycle:
-    // props arrive → render with [] → useEffect fires → setState → re-render with data → repeat
+
     const availableItemCategoryListing = useMemo<SelectInterface[]>(() =>
         availableItemCategories?.map((itemCategory) => ({
             label: itemCategory.name,
@@ -45,13 +43,9 @@ const useItemCreationFormHook = ({
             label: itemTag.name,
             value: itemTag.id
         })) ?? [],
-        // ✅ Bug 2 fixed: was depending on availableItemCategories instead of availableItemTags!
         [availableItemTags]
     );
 
-    // ✅ Bug 3 fixed: memoize the returned fields array so it's not
-    // recreated on every render — this was causing AppSelect to re-render
-    // on every parent render even when nothing changed
     const createFields = useMemo(() => [
         {
             name: "sku",
@@ -134,7 +128,7 @@ const useItemCreationFormHook = ({
             span: 24,
         },
         {
-            name: "image",
+            name: "imageUrl",
             label: "Product Image",
             type: "upload" as FieldType,
             uploadVariant: "dragger" as UploadVariant,
@@ -189,7 +183,7 @@ const useItemCreationFormHook = ({
             span: 24,
         },
         {
-            name: "image",
+            name: "imageUrl",
             label: "Product Image",
             type: "upload" as FieldType,
             uploadVariant: "dragger" as UploadVariant,
@@ -198,8 +192,9 @@ const useItemCreationFormHook = ({
             uploadText: "Click or drag product image here",
             uploadHint: "Supports JPG, PNG, WEBP — max 5 MB",
             span: 8,
+            multiple: true,
             beforeUpload,
-        },
+        }
     ], [availableItemCategoryListing, itemCategoryLoading]);
 
     return activeType === "create" ? createFields : editFields;

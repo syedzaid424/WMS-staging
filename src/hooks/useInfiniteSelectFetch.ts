@@ -8,6 +8,7 @@ interface InfiniteSelectConfig<TApi, TOption> {
     enabled?: boolean;
     refreshTrigger?: unknown;
     shouldRefreshEnable?: boolean;
+    extraParams?: Record<string, any>; // any additional query params
     // how to map API → Select option
     mapOption: (item: TApi) => TOption;
 
@@ -25,6 +26,7 @@ export function useInfiniteSelectFetch<TApi, TOption>({
     enabled = true,
     refreshTrigger,
     shouldRefreshEnable = false,
+    extraParams,
     mapOption,
     getList,
     getTotal,
@@ -35,6 +37,11 @@ export function useInfiniteSelectFetch<TApi, TOption>({
     const [hasMore, setHasMore] = useState(true);
     const [search, setSearch] = useState("");
     const dropdownRef = useRef<HTMLElement | null>(null);
+
+    // Keep extraParams in a ref so fetchPage callback stays stable
+    // even when extraParams object reference changes between renders
+    const extraParamsRef = useRef(extraParams);
+    extraParamsRef.current = extraParams;
 
     const { data, loading, refetch } = useFetch<any>({
         endpoint,
@@ -51,6 +58,7 @@ export function useInfiniteSelectFetch<TApi, TOption>({
                 pageNo,
                 pageSize,
                 search: searchText,
+                ...extraParamsRef.current,
             });
         },
         [refetch, pageSize]
@@ -63,6 +71,27 @@ export function useInfiniteSelectFetch<TApi, TOption>({
             fetchPage(0, "");
         }
     }, [enabled]);
+
+
+    // If extraParams change (e.g. parent filter changes), reset and re-fetch
+    const extraParamsKey = JSON.stringify(extraParams);
+    const isFirstRender = useRef(true);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            // Skip — initial load is already handled by the enabled effect above
+            isFirstRender.current = false;
+            return;
+        }
+        if (!enabled) return;
+
+        // extraParams changed — full reset + re-fetch with new params
+        setPage(0);
+        setHasMore(true);
+        setOptions([]);
+        setSearch("");
+        fetchPage(0, "");
+    }, [extraParamsKey]);
 
     // ================= HANDLE RESPONSE =================
 
@@ -92,17 +121,14 @@ export function useInfiniteSelectFetch<TApi, TOption>({
 
 
     useEffect(() => {
-        if (!enabled) return;
+        if (!enabled || !shouldRefreshEnable) return;
 
-        if (shouldRefreshEnable) {
-            // full reset on refresh
-            setPage(0);
-            setHasMore(true);
-            setOptions([]);
-            setSearch("");
-
-            fetchPage(0, "");
-        }
+        // full reset on refresh
+        setPage(0);
+        setHasMore(true);
+        setOptions([]);
+        setSearch("");
+        fetchPage(0, "");
 
     }, [refreshTrigger]);
 

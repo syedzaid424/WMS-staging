@@ -15,6 +15,9 @@ const appRoutes = {
     'WAREHOUSE_ASSEMBLY': '/warehouse/assembly',
     'WAREHOUSE_LOCATION': '/warehouse/locations',
     'WAREHOUSE_DASHBOARD': '/warehouse/dashboard',
+    'IMPORT_EXPORT': '/import-export',
+    'IMPORT_EXPORT_LOCATIONS': '/import-export/locations',
+    'IMPORT_EXPORT_ITEMS': '/import-export/items',
     'SETTINGS': '/settings',
     'SETTINGS_LOCATION': '/settings/location',
     'SETTINGS_ITEM': '/settings/items',
@@ -31,6 +34,7 @@ const routePrefix = [
     appRoutes.INVENTORY,
     appRoutes.LOCATION,
     appRoutes.SETTINGS,
+    appRoutes.IMPORT_EXPORT_LOCATIONS
 ]
 
 // broadcasting channel for syncing login and logout in multi tabs.
@@ -63,8 +67,15 @@ const apiRoutes = {
     'GET_ITEM': '/item/by',
     'GET_ITEMS': '/item/paginated',
     'GET_LOCATION_OF_ITEM': '/inventory/by',
+    'CREATE_INVENTORY_IN': '/inventory/in',
+    'CREATE_INVENTORY_OUT': '/inventory/out',
+    'CREATE_INVENTORY_ADJUST': '/inventory/adjust',
+    // IMPORT_EXPORT
+    'CREATE_IMPORT_LOCATIONS': '/bulk-upload/location',
+    'CREATE_IMPORT_ITEMS': '/bulk-upload/item',
     // GENERAL
-    'GET_QR_CODE': '/qr-bar-code-generator/qr'
+    'GET_QR_CODE': '/qr-bar-code-generator/qr',
+    'UPLOAD_IMAGE': '/images/upload'
 }
 
 export {

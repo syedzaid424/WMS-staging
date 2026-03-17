@@ -34,7 +34,7 @@ const LoginForm = () => {
         try {
             let res: any = await login(data);
             if (res) {
-                setLogin(res, res.access_token);
+                setLogin(res, res.access_token, res?.refreshToken);
             }
         } catch (error) {
             console.log(error)

@@ -18,7 +18,7 @@ function App() {
       const { setLogin, setLogout } = useAuthStore.getState();
 
       if (type === "LOGIN") {
-        setLogin(payload.user, payload.accessToken, true);
+        setLogin(payload.user, payload.accessToken, payload?.refreshToken, true);
       }
 
       if (type === "LOGOUT") {
