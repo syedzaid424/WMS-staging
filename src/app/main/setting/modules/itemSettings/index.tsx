@@ -11,6 +11,11 @@ import ItemTypeMutationModal from "./ItemTag/component/itemTagMutationModal";
 import { IoReturnUpBack } from "react-icons/io5";
 import { appRoutes } from "../../../../../utils/constants";
 
+const componentTabs = {
+  ITEM_CATEGORY_LISTING: "ItemCategoryListing",
+  ITEM_TAG_LISTING: "ItemTagListing",
+}
+
 const ItemSettings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [openModal, setOpenModal] = useState(false);
@@ -21,9 +26,16 @@ const ItemSettings = () => {
   // Default tab
   useEffect(() => {
     if (!activeTab) {
-      setSearchParams({ tab: "ItemCategoryListing" });
+      setSearchParams({ tab: componentTabs.ITEM_CATEGORY_LISTING });
     }
   }, [activeTab, setSearchParams]);
+
+  // only if active tab not included then set to default again.
+  useEffect(() => {
+    if (!Object.values(componentTabs).includes(activeTab || "")) {
+      setSearchParams({ tab: componentTabs.ITEM_CATEGORY_LISTING });
+    }
+  }, [activeTab]);
 
   // Handle tab change
   const handleTabChange = (key: string) => {
@@ -33,10 +45,10 @@ const ItemSettings = () => {
 
   const actionHandler = () => {
     switch (activeTab) {
-      case "ItemCategoryListing":
+      case componentTabs.ITEM_CATEGORY_LISTING:
         setOpenModal(true);
         break;
-      case "ItemTagListing":
+      case componentTabs.ITEM_TAG_LISTING:
         setOpenModal(true);
         break;
       default:
@@ -47,13 +59,13 @@ const ItemSettings = () => {
   // Dynamic title + button
   const { title, buttonText } = useMemo(() => {
     switch (activeTab) {
-      case "ItemCategoryListing":
+      case componentTabs.ITEM_CATEGORY_LISTING:
         return {
           title: "Item Categories",
           buttonText: "Create Item Category",
         };
 
-      case "ItemTagListing":
+      case componentTabs.ITEM_TAG_LISTING:
       default:
         return {
           title: "Item Tags",
@@ -64,14 +76,14 @@ const ItemSettings = () => {
 
   const items = [
     {
-      key: "ItemCategoryListing",
+      key: componentTabs.ITEM_CATEGORY_LISTING,
       label: "Item Categories",
       children: (
         <ItemCategories refreshItemCategories={refreshItemCategories} />
       ),
     },
     {
-      key: "ItemTagListing",
+      key: componentTabs.ITEM_TAG_LISTING,
       label: "Item Tags",
       children: <ItemTags refreshItemTags={refreshItemTags} />,
     },
@@ -95,13 +107,13 @@ const ItemSettings = () => {
 
       <AppTabs
         className="w-full"
-        activeKey={activeTab ?? "ItemCategoryListing"}
+        activeKey={activeTab ?? componentTabs.ITEM_CATEGORY_LISTING}
         items={items}
         onChange={handleTabChange}
       />
 
       {openModal &&
-        (activeTab == "ItemCategoryListing" ? (
+        (activeTab == componentTabs.ITEM_CATEGORY_LISTING ? (
           <ItemCategoryMutationModal
             open={openModal}
             setOpen={setOpenModal}

@@ -5,10 +5,19 @@ import './App.css'
 import { useAuthStore } from "./store/auth/authStore";
 import { useEffect } from "react";
 import { authChannel } from "./utils/constants";
+import useNetworkStatus from "./hooks/useNetworkStatus";
+import { message } from "antd";
 
 function App() {
 
   const { isAuthenticated } = useAuthStore();
+  const { isOnline } = useNetworkStatus();
+
+  useEffect(() => {
+    if (!isOnline) {
+      message.info("No internet connection.")
+    }
+  }, [isOnline]);
 
   // responsible to listen broadcasting login and logout events to make multiple tabs sync if open.
   useEffect(() => {

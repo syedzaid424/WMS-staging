@@ -10,6 +10,13 @@ interface RoleListingResponse {
     permissions: string[] | []
 }
 
+interface PermissionListingResponse {
+    id: number,
+    name: string,
+    description: string,
+    group: string
+}
+
 interface UserWarehouseOption {
     label: string;
     value: string;
@@ -56,11 +63,27 @@ interface UserRow {
 }
 
 
+interface PermissionItem {
+    id: number;
+    name: string;
+    description: string;
+    group?: string;
+}
+
+interface PermissionGroup {
+    group: string;
+    permissions: PermissionItem[];
+}
+
+
 export type {
     RoleRow,
     RoleListingResponse,
     UserListData,
     UserRow,
     UserListItem,
-    UserWarehouseOption
+    UserWarehouseOption,
+    PermissionListingResponse,
+    PermissionGroup,
+    PermissionItem
 }

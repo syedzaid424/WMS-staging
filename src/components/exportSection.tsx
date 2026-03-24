@@ -84,7 +84,7 @@ const ExportSection = ({
             {/* Header */}
             <div className="flex items-center gap-2 mb-5">
                 <DownloadOutlined className="text-lg" />
-                <AppTitle level={5} className="!mb-0">{title}</AppTitle>
+                <AppTitle level={5}>{title}</AppTitle>
             </div>
 
             {/* Filters */}

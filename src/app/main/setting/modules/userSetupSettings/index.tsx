@@ -7,25 +7,36 @@ import { Link, useSearchParams, useNavigate } from "react-router";
 import { IoReturnUpBack } from "react-icons/io5";
 import { appRoutes } from "../../../../../utils/constants";
 import Roles from "./role";
-import RoleMutationModal from "./role/components/roleMutationModal";
 import Users from "./user";
 import UserMutation from "./user/components/userMutation";
+import Permissions from "./permission";
+
+const componentTabs = {
+    USERS_LISTING: "userListing",
+    ROLES_LISTING: "roleListing",
+    PERMISSIONS_LISTING: "permissionListing"
+}
 
 const UserSetup = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const [openModal, setOpenModal] = useState(false);
-    const [refreshLocationTypes] = useState(0);
-    const [refreshWarehouses, setRefreshWarehouses] = useState(0);
     const activeTab = searchParams.get("tab");
     const navigate = useNavigate();
 
     //  Default tab
     useEffect(() => {
         if (!activeTab) {
-            setSearchParams({ tab: "userListing" });
+            setSearchParams({ tab: componentTabs.USERS_LISTING });
         }
     }, [activeTab, setSearchParams]);
+
+    // only if active tab not included then set to default again.
+    useEffect(() => {
+        if (!Object.values(componentTabs).includes(activeTab || "")) {
+            setSearchParams({ tab: componentTabs.USERS_LISTING });
+        }
+    }, [activeTab])
 
     //  Handle tab change
     const handleTabChange = (key: string) => {
@@ -35,11 +46,11 @@ const UserSetup = () => {
 
     const actionHandler = () => {
         switch (activeTab) {
-            case "userListing":
-                navigate(`${appRoutes.SETTINGS_USERS_CREATE}?type=create`)
+            case componentTabs.USERS_LISTING:
+                navigate(`${appRoutes.SETTINGS_USERS_CREATE}?type=create`);
                 break;
-            case "roleListing":
-                setOpenModal(true);
+            case componentTabs.ROLES_LISTING:
+                navigate(`${appRoutes.SETTINGS_ROLE}?type=create`);
                 break;
             default:
                 break;
@@ -49,31 +60,41 @@ const UserSetup = () => {
     // Dynamic title + button
     const { title, buttonText } = useMemo(() => {
         switch (activeTab) {
-            case "userListing":
+            case componentTabs.USERS_LISTING:
                 return {
                     title: "Users",
                     buttonText: "Create User",
                 };
 
-            case "roleListing":
-            default:
+            case componentTabs.ROLES_LISTING:
                 return {
                     title: "Roles",
                     buttonText: "Create Role",
                 };
+            default:
+                return {
+                    title: "Permissions",
+                    buttonText: "",
+                };
+
         }
     }, [activeTab]);
 
     const items = [
         {
-            key: "userListing",
+            key: componentTabs.USERS_LISTING,
             label: "Users",
-            children: <Users refreshLocationTypes={refreshWarehouses} />,
+            children: <Users />,
         },
         {
-            key: "roleListing",
+            key: componentTabs.ROLES_LISTING,
             label: "Roles",
-            children: <Roles refreshLocationTypes={refreshLocationTypes} />,
+            children: <Roles />,
+        },
+        {
+            key: componentTabs.PERMISSIONS_LISTING,
+            label: "Permissions",
+            children: <Permissions />,
         },
     ];
 
@@ -89,24 +110,23 @@ const UserSetup = () => {
                             {title}
                         </AppTitle>
                     </div>
-
-                    <AppButton onClick={actionHandler}>
-                        {buttonText}
-                    </AppButton>
+                    {
+                        activeTab !== componentTabs.PERMISSIONS_LISTING &&
+                        <AppButton onClick={actionHandler}>
+                            {buttonText}
+                        </AppButton>
+                    }
                 </Row>
             </Col>
 
             <AppTabs
                 className="w-full"
-                activeKey={activeTab ?? "userListing"}
+                activeKey={activeTab ?? componentTabs.USERS_LISTING}
                 items={items}
                 onChange={handleTabChange}
             />
-
             {
-                openModal && (activeTab == "userListing" ?
-                    <UserMutation /> :
-                    <RoleMutationModal open={openModal} setOpen={setOpenModal} setRefreshLocationTypes={setRefreshWarehouses} />)
+                openModal && (activeTab == componentTabs.USERS_LISTING && <UserMutation />)
             }
         </Row>
     );

@@ -133,8 +133,8 @@ api.interceptors.response.use(
 /* ================= HTTP METHODS ================= */
 
 export const http = {
-    get: async <T>(url: string, params?: object): Promise<T> => {
-        const response = await api.get<T>(url, { params });
+    get: async <T>(url: string, params?: object, signal?: AbortSignal): Promise<T> => {
+        const response = await api.get<T>(url, { params, signal });
         return response.data;
     },
     post: async <T, D = unknown>(url: string, data?: D, params?: object): Promise<T> => {

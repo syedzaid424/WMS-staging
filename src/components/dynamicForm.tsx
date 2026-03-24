@@ -17,6 +17,7 @@ import AppSelect from "./select";
 import type { UploadFile, UploadProps } from "antd";
 import { UploadOutlined, InboxOutlined } from "@ant-design/icons";
 import AppImage from "./image";
+import type { SelectInterface } from "../utils/types";
 
 /* ================= TYPES ================= */
 
@@ -58,6 +59,11 @@ interface FormField {
     loading?: boolean,
     showSearch?: boolean;
     mode?: ModeType,
+    runtimeHydratedOptions?: { label: string; value: any }[];
+    onSelectOption?: (option: SelectInterface, mode?: string) => void;
+    onDeselectOption?: (value: any) => void;
+    onClearAll?: () => void;
+    onDropdownVisibleChange?: (open: boolean) => void;
 
     /**
    * Upload controls
@@ -251,6 +257,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                                         <AppSelect
                                             options={(field.options ?? EMPTY_OPTIONS) as DefaultOptionType[]}
                                             hydratedOptions={(field?.selectedOptionsFromBackend ?? EMPTY_OPTIONS) as DefaultOptionType[]}
+                                            runtimeHydratedOptions={(field?.runtimeHydratedOptions ?? EMPTY_OPTIONS) as DefaultOptionType[]}
                                             value={rhfField.value}
                                             onChange={(val) => rhfField.onChange(val)}
                                             onBlur={rhfField.onBlur}
@@ -268,6 +275,10 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                                             mode={field?.mode}
                                             defaultValue={field?.defaultValue}
                                             loading={field?.loading}
+                                            onSelectOption={field?.onSelectOption}
+                                            onDeselectOption={field?.onDeselectOption}
+                                            onClearAll={field?.onClearAll}
+                                            onDropdownVisibleChange={field?.onDropdownVisibleChange}
                                         />
                                     </Form.Item>
                                 );

@@ -23,21 +23,41 @@ const UserMutation = () => {
     // Get the state passed during navigation
     const state = location.state || {};
 
-    // warehouse listing for select.
+    // Separate instance for Primary Warehouse
+    const {
+        options: availablePrimaryWarehouses,
+        loading: primaryWarehouseLoading,
+        hasMore: hasMorePrimaryWarehouses,
+        loadMore: handleLoadMorePrimaryWarehouses,
+        handleSearch: handlePrimaryWarehouseSearch,
+        handleOptionSelect: handlePrimaryWarehouseSelect,
+        handleOptionDeselect: handlePrimaryWarehouseDeselect,
+        handleClear: handlePrimaryWarehouseClear,
+        handleDropdownVisibleChange: handlePrimaryWarehouseDropdownChange,
+        runtimeHydratedOptions: primaryWarehouseRuntimeHydrated,
+    } = useInfiniteSelectFetch<Warehouse, SelectInterface>({
+        endpoint: settingApiRoute.getWarehouses,
+        mapOption: (w) => ({ label: w.name, value: w.id }),
+        getList: (data) => data?.data?.warehouses,
+        getTotal: (data) => data?.data?.totalElements,
+        pageSize: 10,
+    });
+
+    // Separate instance for Warehouses (multi select)
     const {
         options: availableWarehouses,
         loading: warehouseLoading,
         hasMore: hasMoreWarehouses,
         loadMore: handleLoadMoreWarehouses,
-    } = useInfiniteSelectFetch<
-        Warehouse,
-        SelectInterface
-    >({
+        handleSearch: handleWarehouseSearch,
+        handleOptionSelect: handleWarehouseSelect,
+        handleOptionDeselect: handleWarehouseDeselect,
+        handleClear: handleWarehouseClear,
+        handleDropdownVisibleChange: handleWarehouseDropdownChange,
+        runtimeHydratedOptions: warehouseRuntimeHydrated,
+    } = useInfiniteSelectFetch<Warehouse, SelectInterface>({
         endpoint: settingApiRoute.getWarehouses,
-        mapOption: (w) => ({
-            label: w.name,
-            value: w.id,
-        }),
+        mapOption: (w) => ({ label: w.name, value: w.id }),
         getList: (data) => data?.data?.warehouses,
         getTotal: (data) => data?.data?.totalElements,
         pageSize: 10,
@@ -57,14 +77,35 @@ const UserMutation = () => {
 
     // form fields
     const formFields = useUserMutationFormHook({
+        // Primary warehouse
+        availablePrimaryWarehouses,
+        primaryWarehouseLoading,
+        hasMorePrimaryWarehouses,
+        handleLoadMorePrimaryWarehouses,
+        handlePrimaryWarehouseSearch,
+        primaryWarehouseRuntimeHydrated,
+        onSelectPrimaryWarehouse: handlePrimaryWarehouseSelect,
+        onDeselectPrimaryWarehouse: handlePrimaryWarehouseDeselect,
+        onClearPrimaryWarehouse: handlePrimaryWarehouseClear,
+        onPrimaryWarehouseDropdownChange: handlePrimaryWarehouseDropdownChange,
+
+        // Warehouses multi
         availableWarehouses,
-        editResponseState: state,
         warehouseLoading,
         hasMoreWarehouses,
         handleLoadMoreWarehouses,
+        handleWarehouseSearch,
+        warehouseRuntimeHydrated,
+        onSelectWarehouse: handleWarehouseSelect,
+        onDeselectWarehouse: handleWarehouseDeselect,
+        onClearWarehouse: handleWarehouseClear,
+        onWarehouseDropdownChange: handleWarehouseDropdownChange,
+
+        // rest
+        editResponseState: state,
         rolesLoading,
         availableRoles: availableRoles?.data || [],
-        formType
+        formType,
     });
 
 

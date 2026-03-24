@@ -15,17 +15,21 @@ interface LocationRow {
     warehouseId: string;
     status: string;
     parentCode: string;
+    description: string;
     [key: string]: string;
+    createdAt: string
 }
 
 /* ── Import config ── */
 const REQUIRED_COLUMNS: (keyof LocationRow)[] = [
     'name',
+    'description',
     'code',
     'typeId',
+    'parentCode',
     'warehouseId',
     'status',
-    'parentCode'
+    'createdAt'
 ];
 
 

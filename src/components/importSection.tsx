@@ -161,7 +161,7 @@ function ImportSection<T extends Record<string, string>>({
                     requiredColumns.includes(header as keyof T) ? (
                         <span>
                             {header}{' '}
-                            <Tag color="blue" className="text-xs font-normal ml-1">required</Tag>
+                            *
                         </span>
                     ) : header
                 ),
@@ -252,7 +252,7 @@ function ImportSection<T extends Record<string, string>>({
                     }
                     <p className="text-xs text-error-color mb-4">
                         Your file had {validation.totalRows} data rows.
-                        Fix the column headers and re-upload.
+                        Add minimum 1 record and re-upload.
                     </p>
                     <AppButton size="small" className='w-fit h-7! px-4! mt-3!' onClick={handleReset}>
                         Upload a different file

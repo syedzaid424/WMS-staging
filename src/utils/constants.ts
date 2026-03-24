@@ -23,7 +23,8 @@ const appRoutes = {
     'SETTINGS_ITEM': '/settings/items',
     'SETTINGS_USERS_SETUP': '/settings/users-setup',
     'SETTINGS_USERS_CREATE': '/settings/create-user',
-    'SETTINGS_USERS_EDIT': '/settings/update-user'
+    'SETTINGS_USERS_EDIT': '/settings/update-user',
+    'SETTINGS_ROLE': '/settings/role'
 }
 
 // route prefix to show the sidebar item active even in case of active nested item.
@@ -55,9 +56,11 @@ const apiRoutes = {
     'UPDATE_USER_WAREHOUSE': '/user/warehouse',
     'GET_ROLES': '/role',
     'CREATE_ROLE': '/role',
+    'EDIT_ROLE': '/',
     'CREATE_USER': '/user/register',
     'GET_USERS': '/user/paginated',
     'UPDATE_USER': '/user',
+    'GET_PERMISSIONS': '/permission',
     // ITEMS
     'GET_ITEM_CATEGORIES': '/item-category',
     'GET_ITEM_TAGS': '/tag',

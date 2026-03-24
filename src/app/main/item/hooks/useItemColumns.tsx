@@ -1,7 +1,6 @@
 import type { ColumnsType } from "antd/es/table"
 import type { ItemRow } from "../../../../types/main/item"
 import { useMemo } from "react";
-import AppAvatar from "../../../../components/avatar";
 import { Tag } from "antd";
 import dayjs from "dayjs";
 import AppButton from "../../../../components/button";
@@ -26,14 +25,9 @@ const useItemColumns = () => {
                 dataIndex: "imageUrl",
                 key: "imageUrl",
                 render: (_, record) => (
-                    <AppAvatar children={
-                        <AppImage src={record?.imageUrl}
-                            className=""
-
-                        />
-                    }
-                        size={45}
-                        shape="square"
+                    <AppImage src={record?.imageUrl}
+                        className="h-15! rounded-md"
+                        width={60}
                     />
                 )
             },

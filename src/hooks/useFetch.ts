@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { message } from "antd";
 import { http } from "../utils/apiConfig";
+import axios from "axios";
 
 interface BaseApiResponse {
     message?: string;
@@ -52,10 +53,17 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
 
     const firstLoadRef = useRef(true);
 
+    const abortControllerRef = useRef<AbortController | null>(null);
+
     // fetchData is now stable — no object deps, uses refs instead
     const fetchData = useCallback(
         async (overrideParams?: TParams) => {
             if (!endpoint) return;
+
+            // Cancel any in-flight request before starting a new one
+            abortControllerRef.current?.abort();
+            abortControllerRef.current = new AbortController();
+            const signal = abortControllerRef.current.signal;
 
             setLoading(true);
             setError(null);
@@ -63,21 +71,25 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
             try {
                 const finalParams = overrideParams ?? paramsRef.current;
                 const finalUrl = buildUrl(endpoint, pathParams);
-                const result = await http.get<TData>(finalUrl, finalParams!);
+                const result = await http.get<TData>(finalUrl, finalParams!, signal);
                 console.log(result)
+                if (signal.aborted) return;
                 setData(result);
 
                 if (showSuccessRef.current) {
                     message.success(result?.message || successMessageRef.current);
                 }
             } catch (err: any) {
+                if (axios.isCancel(err) || signal.aborted) return;
                 setError(err);
                 setData(null);
                 if (showErrorRef.current) {
                     message.error(err?.message || "Something went wrong");
                 }
             } finally {
-                setLoading(false);
+                if (!signal.aborted) {
+                    setLoading(false);
+                }
                 firstLoadRef.current = false;
             }
         },
@@ -104,6 +116,12 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
             fetchData();
         }
     }, refreshDeps); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        return () => {
+            abortControllerRef.current?.abort();
+        };
+    }, []);
 
     return { data, loading, error, refetch: fetchData, setData };
 }

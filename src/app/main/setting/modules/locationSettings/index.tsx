@@ -11,6 +11,11 @@ import WarehouseListing from "./warehouse";
 import { IoReturnUpBack } from "react-icons/io5";
 import { appRoutes } from "../../../../../utils/constants";
 
+const componentTabs = {
+    WAREHOUSE_LISTING: "warehouseListing",
+    LOCATION_TYPE_LISTING: "locationTypeListing",
+}
+
 const LocationSettings = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -22,9 +27,16 @@ const LocationSettings = () => {
     //  Default tab
     useEffect(() => {
         if (!activeTab) {
-            setSearchParams({ tab: "warehouseListing" });
+            setSearchParams({ tab: componentTabs.WAREHOUSE_LISTING });
         }
     }, [activeTab, setSearchParams]);
+
+    // only if active tab not included then set to default again.
+    useEffect(() => {
+        if (!Object.values(componentTabs).includes(activeTab || "")) {
+            setSearchParams({ tab: componentTabs.WAREHOUSE_LISTING });
+        }
+    }, [activeTab]);
 
     //  Handle tab change
     const handleTabChange = (key: string) => {
@@ -34,10 +46,10 @@ const LocationSettings = () => {
 
     const actionHandler = () => {
         switch (activeTab) {
-            case "warehouseListing":
+            case componentTabs.WAREHOUSE_LISTING:
                 setOpenModal(true);
                 break;
-            case "locationTypeListing":
+            case componentTabs.LOCATION_TYPE_LISTING:
                 setOpenModal(true);
                 break;
             default:
@@ -48,13 +60,13 @@ const LocationSettings = () => {
     // Dynamic title + button
     const { title, buttonText } = useMemo(() => {
         switch (activeTab) {
-            case "locationTypeListing":
+            case componentTabs.LOCATION_TYPE_LISTING:
                 return {
                     title: "Location Types",
                     buttonText: "Create Location Type",
                 };
 
-            case "warehouseListing":
+            case componentTabs.WAREHOUSE_LISTING:
             default:
                 return {
                     title: "Warehouses",
@@ -65,12 +77,12 @@ const LocationSettings = () => {
 
     const items = [
         {
-            key: "warehouseListing",
+            key: componentTabs.WAREHOUSE_LISTING,
             label: "Warehouses",
             children: <WarehouseListing refreshWarehouses={refreshWarehouses} />,
         },
         {
-            key: "locationTypeListing",
+            key: componentTabs.LOCATION_TYPE_LISTING,
             label: "Location Types",
             children: <LocationTypes refreshLocationTypes={refreshLocationTypes} />,
         },
@@ -97,13 +109,13 @@ const LocationSettings = () => {
 
             <AppTabs
                 className="w-full"
-                activeKey={activeTab ?? "warehouseListing"}
+                activeKey={activeTab ?? componentTabs.WAREHOUSE_LISTING}
                 items={items}
                 onChange={handleTabChange}
             />
 
             {
-                openModal && (activeTab == "locationTypeListing" ?
+                openModal && (activeTab == componentTabs.LOCATION_TYPE_LISTING ?
                     <LocationTypeMutationModal open={openModal} setOpen={setOpenModal} setRefreshLocationTypes={setRefreshLocationTypes} /> :
                     <WarehouseMutatingModal open={openModal} setOpen={setOpenModal} setRefreshWarehouses={setRefreshWarehouses} />)
             }

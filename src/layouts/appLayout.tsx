@@ -40,6 +40,11 @@ const AppLayout = () => {
         hasMore: hasMoreWarehouses,
         loadMore: handleLoadMoreWarehouses,
         handleSearch: handleWarehouseSearch,
+        handleOptionSelect,
+        handleOptionDeselect,
+        handleClear,
+        handleDropdownVisibleChange,
+        runtimeHydratedOptions
     } = useInfiniteSelectFetch<
         Warehouse,
         SelectInterface
@@ -49,7 +54,7 @@ const AppLayout = () => {
             label: w.name,
             value: w.id,
         }),
-        refreshTrigger: warehouseRefreshKey,           // this will trigger to fetch again because of warehouse creation from somewhere.
+        refreshTrigger: warehouseRefreshKey,   // this will trigger to fetch again because of warehouse creation from somewhere.
         shouldRefreshEnable: true,
         getList: (data) => data?.data?.warehouses,
         getTotal: (data) => data?.data?.totalElements,
@@ -62,7 +67,7 @@ const AppLayout = () => {
     // hydratedOptions for paginated select items so it will always show the selected option regardless of it exist on that page or not.
     const hydratedOptions = useMemo(() => (
         [{ label: user?.warehouseName, value: Number(user?.warehouseId) || '0' }]
-    ), [availableLocations?.toString(), user]);
+    ), [user?.warehouseName, user?.warehouseId]);
 
 
     // mutate the warehouse default selection.
@@ -72,16 +77,11 @@ const AppLayout = () => {
         showSuccessMessage: true,
     });
 
-
     useEffect(() => {
         if (location.pathname) {
-            console.log(location.pathname)
-            console.log(routePrefix.find(route => location.pathname.startsWith(route)) || location.pathname)
             setActiveTab(() => routePrefix.find(route => location.pathname.startsWith(route)) || location.pathname)
         }
     }, [location.pathname])
-
-    console.log(activeTab)
 
     const handleMenuClick: MenuProps['onClick'] = (e) => {
         switch (e.key) {
@@ -211,6 +211,7 @@ const AppLayout = () => {
                                 placeholder="Search Warehouses"
                                 options={availableLocations}
                                 hydratedOptions={hydratedOptions}
+                                runtimeHydratedOptions={runtimeHydratedOptions}
                                 loading={warehouseLoading || updatePrimaryWarehouseLoading}
                                 enableInfiniteScroll
                                 hasMore={hasMoreWarehouses}
@@ -220,7 +221,11 @@ const AppLayout = () => {
                                 prefix={<FaWarehouse />}
                                 className="min-w-50 max-w-55 gap-1 warehouse-select-input"
                                 onChange={(value: number) => warehouseChangeHandler(value)}
-                                showSearch={false}
+                                showSearch={true}
+                                onDropdownVisibleChange={handleDropdownVisibleChange}
+                                onSelectOption={handleOptionSelect}         // stores option object on select
+                                onDeselectOption={handleOptionDeselect}     // removes on deselect
+                                onClearAll={handleClear}
                             />
                             {/* other options */}
                             <AppDropdown menu={{ items }} trigger={["hover"]}>

@@ -22,6 +22,12 @@ const REQUIRED_COLUMNS: (keyof ItemRow)[] = [
     'sku',
     'code',
     'name',
+    'description',
+    'categoryName',
+    'weight',
+    'width',
+    'height',
+    'length',
     'status',
     'imageUrl',
 ];

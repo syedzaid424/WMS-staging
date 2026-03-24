@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useMemo } from 'react'
 import { useMutation } from '../../../../hooks/useMutatation';
 import type { ApiResponse, SelectInterface } from '../../../../utils/types';
 import AppModal from '../../../../components/modal';
@@ -10,7 +10,7 @@ import useFetch from '../../../../hooks/useFetch';
 import { useAuthStore } from '../../../../store/auth/authStore';
 import { useWarehouseStore } from '../../../../store/main/warehouseStore';
 import type { Location, LocationFormValues, LocationTypeListingResponse } from '../../../../types/main/location';
-
+import useLocationMutationFormHook from '../hooks/useLocationMutationFormHook';
 
 interface locationMutatingModal {
     open: boolean,
@@ -19,9 +19,6 @@ interface locationMutatingModal {
 }
 
 const LocationMutatingModal = ({ open, setOpen, setRefreshLocations }: locationMutatingModal) => {
-
-    const [availableLocationTypesListing, setAvailableLocationTypesListing] = useState<SelectInterface[]>([]);
-    const [availableWarehouseListing, setAvailableWarehouseListing] = useState<SelectInterface[]>([]);
 
     const { user } = useAuthStore();
     const { warehouseRecord } = useWarehouseStore();
@@ -33,7 +30,12 @@ const LocationMutatingModal = ({ open, setOpen, setRefreshLocations }: locationM
         hasMore: hasMoreLocations,
         loadMore: handleLoadMoreLocations,
         handleSearch: handleLocationSearch,
-        reset: locationListingReset
+        handleOptionSelect: handleLocationSelect,
+        handleOptionDeselect: handleLocationDeselect,
+        handleClear: handleLocationClear,
+        handleDropdownVisibleChange: handleLocationDropdownChange,
+        runtimeHydratedOptions: locationRuntimeHydrated,
+        reset: locationListingReset,
     } = useInfiniteSelectFetch<
         Location,
         SelectInterface
@@ -46,7 +48,7 @@ const LocationMutatingModal = ({ open, setOpen, setRefreshLocations }: locationM
         getList: (data) => data?.data?.locations,
         getTotal: (data) => data?.data?.totalElements,
         pageSize: 10,
-        enabled: open             // fetched when modal gets open
+        enabled: open // fetched when modal gets open
     });
 
     // location-type listing for select.
@@ -56,28 +58,22 @@ const LocationMutatingModal = ({ open, setOpen, setRefreshLocations }: locationM
     });
 
     // to set warehouse listing.
-    useEffect(() => {
-        if (availableLocationTypes && availableLocationTypes?.data?.length > 0) {
-            const items = availableLocationTypes.data.map((locationType) => ({
-                label: locationType.name,
-                value: locationType.id
-            }));
-            setAvailableLocationTypesListing(items);
-        }
-    }, [availableLocationTypes]);
-
+    const availableLocationTypesListing = useMemo<SelectInterface[]>(() =>
+        availableLocationTypes?.data?.map(lt => ({
+            label: lt.name,
+            value: lt.id,
+        })) ?? [],
+        [availableLocationTypes?.data]
+    );
 
     // to set warehouse listing.
-    useEffect(() => {
-        if (warehouseRecord && warehouseRecord?.warehouses?.length > 0) {
-            const items = warehouseRecord.warehouses.map((warehouse) => ({
-                label: warehouse.name,
-                value: warehouse.id
-            }));
-            setAvailableWarehouseListing(items);
-        }
-    }, [warehouseRecord?.warehouses]);
-
+    const availableWarehouseListing = useMemo<SelectInterface[]>(() =>
+        warehouseRecord?.warehouses?.map(w => ({
+            label: w.name,
+            value: w.id,
+        })) ?? [],
+        [warehouseRecord?.warehouses]
+    );
 
     const { mutate, loading } = useMutation<ApiResponse<any>>({
         endpoint: locationApiRoutes.createLocation,
@@ -104,6 +100,30 @@ const LocationMutatingModal = ({ open, setOpen, setRefreshLocations }: locationM
         }
     }
 
+    // hydratedOption.
+    const hydratedOption = useMemo<SelectInterface[]>(() => (
+        [{ label: user?.warehouseName!, value: Number(user?.warehouseId) || '0' }]
+    ), [user?.warehouseName, user?.warehouseId]);
+
+    
+    const formFields = useLocationMutationFormHook({
+        availableLocationTypesListing,
+        locationTypeLoading,
+        availableWarehouseListing,
+        hydratedOption,
+        userId: user?.warehouseId,
+        availableLocations,
+        locationLoading,
+        hasMoreLocations,
+        handleLoadMoreLocations,
+        handleLocationSearch,
+        locationRuntimeHydrated,
+        onSelectLocation: handleLocationSelect,
+        onDeselectLocation: handleLocationDeselect,
+        onClearLocation: handleLocationClear,
+        onLocationDropdownChange: handleLocationDropdownChange,
+    });
+
     return (
         <AppModal
             open={open}
@@ -115,72 +135,7 @@ const LocationMutatingModal = ({ open, setOpen, setRefreshLocations }: locationM
         >
             <div className='py-2'>
                 <DynamicForm
-                    fields={
-                        [
-                            {
-                                name: "code",
-                                label: "Location Code",
-                                type: "text",
-                                span: 12,
-                                placeholder: "Enter warehouse code"
-                            },
-                            {
-                                name: "name",
-                                label: "Location Name",
-                                type: "text",
-                                span: 12,
-                                placeholder: "Enter warehouse name"
-                            },
-                            {
-                                name: "description",
-                                label: "Description",
-                                type: "textarea",
-                                span: 24,
-                                placeholder: "Enter warehouse description..."
-                            },
-                            {
-                                name: "locationTypeId",
-                                label: "Location Type",
-                                type: "select",
-                                span: 12,
-                                options: availableLocationTypesListing,
-                                inputClassName: "h-10",
-                                placeholder: "Select location type",
-                                searchMode: "local",
-                                enableInfiniteScroll: false,
-                                loading: locationTypeLoading,
-                                showSearch: false
-                            },
-                            {
-                                name: "warehouseId",
-                                label: "Warehouse",
-                                type: "select",
-                                span: 12,
-                                options: availableWarehouseListing,
-                                defaultValue: user?.warehouseId,
-                                inputClassName: "h-10",
-                                placeholder: "Select warehouse",
-                                showSearch: false,
-                                readOnly: true
-                            },
-                            {
-                                name: "parentLocationId",
-                                label: "Parent Location",
-                                type: "select",
-                                span: 12,
-                                options: availableLocations,
-                                inputClassName: "h-10",
-                                placeholder: "Select parent location",
-                                searchMode: "remote",
-                                enableInfiniteScroll: true,
-                                hasMore: hasMoreLocations,
-                                onLoadMore: handleLoadMoreLocations,
-                                onRemoteSearch: handleLocationSearch,
-                                loading: locationLoading,
-                                showSearch: false
-                            }
-                        ]
-                    }
+                    fields={formFields}
                     validationSchema={locationValidationSchema}
                     loading={loading}
                     onSubmit={handleSubmit}

@@ -16,7 +16,7 @@ interface InfiniteSelectConfig<TApi, TOption> {
     getList: (data: any) => TApi[];
     getTotal: (data: any) => number;
 
-    // optional zustand setter
+    // optional data setter
     onData?: (data: any) => void;
 }
 
@@ -38,6 +38,35 @@ export function useInfiniteSelectFetch<TApi, TOption>({
     const [search, setSearch] = useState("");
     const dropdownRef = useRef<HTMLElement | null>(null);
 
+    // In useInfiniteSelectFetch — track selected hydrated options
+    const [runtimeHydratedOptions, setRuntimeHydratedOptions] = useState<TOption[]>([]);
+
+    //  ON SELECT 
+    // Called by parent when user selects a value — store the full option object
+    const handleOptionSelect = useCallback((option: TOption, mode?: string) => {
+        const opt = option as any;
+        const isMultiple = mode === 'multiple' || mode === 'tags';
+
+        setRuntimeHydratedOptions(prev => {
+            if (isMultiple) {
+                // Multi — append, avoid duplicates
+                const exists = prev.some((o: any) => o.value === opt.value);
+                return exists ? prev : [...prev, opt];
+            }
+            // Single — replace entirely with only the new selection
+            return [opt];
+        });
+    }, []);
+
+    //  ON DESELECT (multi) 
+    const handleOptionDeselect = useCallback((value: any) => {
+        // Remove deselected item from runtime hydrated (multi select)
+        setRuntimeHydratedOptions(prev =>
+            prev.filter((o: any) => o.value !== value)
+        );
+    }, []);
+
+
     // Keep extraParams in a ref so fetchPage callback stays stable
     // even when extraParams object reference changes between renders
     const extraParamsRef = useRef(extraParams);
@@ -50,8 +79,7 @@ export function useInfiniteSelectFetch<TApi, TOption>({
 
     console.log(data)
 
-    // ================= FETCH PAGE =================
-
+    // FETCH PAGE
     const fetchPage = useCallback(
         (pageNo: number, searchText: string) => {
             refetch({
@@ -64,8 +92,7 @@ export function useInfiniteSelectFetch<TApi, TOption>({
         [refetch, pageSize]
     );
 
-    // ================= INITIAL LOAD =================
-
+    // INITIAL LOAD
     useEffect(() => {
         if (enabled) {
             fetchPage(0, "");
@@ -93,8 +120,7 @@ export function useInfiniteSelectFetch<TApi, TOption>({
         fetchPage(0, "");
     }, [extraParamsKey]);
 
-    // ================= HANDLE RESPONSE =================
-
+    // HANDLE RESPONSE 
     useEffect(() => {
         if (!data) return;
 
@@ -120,8 +146,15 @@ export function useInfiniteSelectFetch<TApi, TOption>({
     }, [data]);
 
 
+    const isRefreshFirstRender = useRef(true);
     useEffect(() => {
         if (!enabled || !shouldRefreshEnable) return;
+
+        // Skip on mount — Effect 1 already handles initial fetch
+        if (isRefreshFirstRender.current) {
+            isRefreshFirstRender.current = false;
+            return;
+        }
 
         // full reset on refresh
         setPage(0);
@@ -132,8 +165,7 @@ export function useInfiniteSelectFetch<TApi, TOption>({
 
     }, [refreshTrigger]);
 
-    // ================= LOAD MORE =================
-
+    // LOAD MORE 
     const loadMore = useCallback(() => {
         if (loading || !hasMore) return;
 
@@ -142,8 +174,7 @@ export function useInfiniteSelectFetch<TApi, TOption>({
         fetchPage(nextPage, search);
     }, [loading, hasMore, page, fetchPage, search]);
 
-    // ================= DEBOUNCED SEARCH =================
-
+    // DEBOUNCED SEARCH
     const debouncedSearchRef = useRef(
         debounce((value: string) => {
             setPage(0);
@@ -158,6 +189,29 @@ export function useInfiniteSelectFetch<TApi, TOption>({
         debouncedSearchRef.current(value);
     }, []);
 
+    const resetToFirstPage = useCallback(() => {
+        setPage(0);
+        setHasMore(true);
+        setOptions([]);
+        setSearch("");
+        fetchPage(0, "");
+    }, [fetchPage]);
+
+    //  ON CLEAR 
+    const handleClear = useCallback(() => {
+        // Clear all runtime hydrated on clear
+        setRuntimeHydratedOptions([]);
+    }, []);
+
+    //  DROPDOWN CLOSE 
+    const handleDropdownVisibleChange = useCallback((open: boolean) => {
+        if (!open && search) {
+            resetToFirstPage(); // reset list to page 1
+            // hydratedOptions still holds selected items — they survive the reset
+        }
+    }, [search, resetToFirstPage]);
+
+
     return {
         options,
         loading,
@@ -168,10 +222,15 @@ export function useInfiniteSelectFetch<TApi, TOption>({
             setPage(0);
             setHasMore(false);
             setOptions([]);
-            setSearch("")
+            setSearch("");
         },
         setDropdownRef: (el: HTMLElement | null) => {
             dropdownRef.current = el;
-        }
+        },
+        handleDropdownVisibleChange,
+        handleOptionSelect,
+        handleOptionDeselect,
+        handleClear,
+        runtimeHydratedOptions
     };
 }
