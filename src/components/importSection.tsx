@@ -250,10 +250,15 @@ function ImportSection<T extends Record<string, string>>({
                             </div>
                         </>
                     }
-                    <p className="text-xs text-error-color mb-4">
-                        Your file had {validation.totalRows} data rows.
-                        Add minimum 1 record and re-upload.
-                    </p>
+                    {
+                        validation?.totalRows == 0 &&
+                        <>
+                            <p className="text-xs text-error-color mb-4">
+                                Your file had {validation.totalRows} data rows.
+                                Add minimum 1 record and re-upload.
+                            </p>
+                        </>
+                    }
                     <AppButton size="small" className='w-fit h-7! px-4! mt-3!' onClick={handleReset}>
                         Upload a different file
                     </AppButton>
