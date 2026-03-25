@@ -13,25 +13,30 @@ import { EditOutlined } from "@ant-design/icons";
 import { BsQrCode } from "react-icons/bs";
 import { downloadPDF } from "../../../utils/handlers"
 import type { LocationResponse, LocationRow } from "../../../types/main/location"
+import { IoIosSearch } from "react-icons/io";
+import DebounceSearchBar from "../../../components/debounceSearch"
+import Loader from "../../../components/loader"
 
 const Location = () => {
 
     const [pagination, setPagination] = useState({
         page: 1,
-        pageSize: 10,
+        pageSize: 50,
         total: 0,
     });
 
     const [openModal, setOpenModal] = useState(false);
     const [refreshLocations, setRefreshLocations] = useState(0);
+    const [searchValue, setSearchValue] = useState("")
     const { user } = useAuthStore();
 
     const params = useMemo(
         () => ({
             pageNo: pagination.page - 1,
             pageSize: pagination.pageSize,
+            search: searchValue
         }),
-        [pagination.page, pagination.pageSize]
+        [pagination.page, pagination.pageSize, searchValue]
     );
 
     // to generate Locations listing.
@@ -51,18 +56,19 @@ const Location = () => {
         }));
     }, [data]);
 
-    const handlePageChange = (page: number) => {
+    const handlePageChange = (page: number, pageSize: number) => {
         setPagination((prev) => ({
             ...prev,
-            page: page,
+            page, pageSize
         }));
     };
+
 
     const actionHandler = () => {
         setOpenModal(true)
     }
 
-    const handleEdit = (record: any) => { 
+    const handleEdit = (record: any) => {
         console.log(record)
     };
 
@@ -129,6 +135,11 @@ const Location = () => {
         ]
     ), []);
 
+
+    const searchHandler = (value: any) => {
+        setSearchValue(value);
+    }
+
     return (
         <Row className="gap-5 w-full">
             <Col span={24} className="intro-row">
@@ -143,6 +154,15 @@ const Location = () => {
                         Create Location
                     </AppButton>
                 </Row>
+            </Col>
+
+            <Col span={24}>
+                <DebounceSearchBar
+                    prefix={<IoIosSearch size={20} color="gray" />}
+                    setSearchDebouncedValue={searchHandler}
+                    className="h-11"
+                    suffix={loading && <Loader size="10" />}
+                />
             </Col>
 
             <Col span={24}>

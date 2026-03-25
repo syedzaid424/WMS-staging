@@ -97,12 +97,13 @@ const WarehouseListing = ({ refreshWarehouses }: WarehouseListingProps) => {
     }
   }, [refreshWarehouses])
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page: number, pageSize: number) => {
     setPagination((prev) => ({
       ...prev,
-      page: page,
+      page, pageSize
     }));
   };
+
 
   return (
     <AppTable<WarehouseRow>

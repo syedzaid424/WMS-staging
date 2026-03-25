@@ -14,7 +14,7 @@ interface ItemCategoriesProps {
 }
 
 const ItemCategories = ({ refreshItemCategories }: ItemCategoriesProps) => {
- 
+
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 10,
@@ -37,12 +37,13 @@ const ItemCategories = ({ refreshItemCategories }: ItemCategoriesProps) => {
   })
 
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page: number, pageSize: number) => {
     setPagination((prev) => ({
       ...prev,
-      page: page,
+      page, pageSize
     }));
   };
+
 
   const handleEdit = (record: ItemCategoryRow) => {
     console.log("Edit:", record);

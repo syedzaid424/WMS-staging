@@ -205,8 +205,9 @@ function AppTable<T extends object>({
                         current: currentPage,
                         pageSize,
                         total,
-                        showSizeChanger: false,
-                        pageSizeOptions: ["5", "10", "20", "50"],
+                        showSizeChanger: true,
+                        pageSizeOptions: ["10", "20", "50", "100", "200"],
+                        onShowSizeChange: onPageChange,
                         onChange: onPageChange,
                         showTotal: (total) => `Total ${total} items`,
                     }

@@ -1,5 +1,6 @@
 import { Image } from 'antd'
 import type { ImageProps } from 'antd'
+import fallback from "../assets/fallback.jpg";
 
 interface AppImageProps extends ImageProps {
     src: string
@@ -12,7 +13,7 @@ const AppImage = ({ src, width = 200, ...rest }: AppImageProps) => {
             alt="basic"
             width={width}
             src={src}
-            fallback='https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
+            fallback={fallback}
         />
     )
 }

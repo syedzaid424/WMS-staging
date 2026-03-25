@@ -90,6 +90,7 @@
         border: 1px solid var(--color-primary) !important;
     }
 
+
     /* antd menu colors */
     .ant-menu-dark.ant-menu-root.ant-menu-inline {
         background-color: var(--color-primary) !important;
@@ -115,6 +116,7 @@
         background-color: #e7e0e071 !important;
         color: var(--color-text-dark) !important;
     }
+
 }
 
 .label-color {

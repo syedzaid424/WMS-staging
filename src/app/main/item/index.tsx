@@ -11,14 +11,18 @@ import type { ItemRow, ItemsListData } from '../../../types/main/item'
 import useItemColumns from './hooks/useItemColumns'
 import { useNavigate } from 'react-router'
 import { appRoutes } from '../../../utils/constants'
+import DebounceSearchBar from '../../../components/debounceSearch'
+import { IoIosSearch } from 'react-icons/io'
+import Loader from '../../../components/loader'
 
 const Items = () => {
 
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 10,
+    pageSize: 50,
     total: 0,
   });
+  const [searchValue, setSearchValue] = useState("")
 
   const { user } = useAuthStore();
   const { itemColumns } = useItemColumns();
@@ -28,8 +32,9 @@ const Items = () => {
     () => ({
       pageNo: pagination.page - 1,
       pageSize: pagination.pageSize,
+      search: searchValue
     }),
-    [pagination.page, pagination.pageSize]
+    [pagination.page, pagination.pageSize, searchValue]
   );
 
   // to generate Locations listing.
@@ -57,14 +62,16 @@ const Items = () => {
     navigate(appRoutes.CREATE_ITEM)
   }
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page: number, pageSize: number) => {
     setPagination((prev) => ({
       ...prev,
-      page: page,
+      page, pageSize
     }));
   };
 
-  console.log(pagination)
+  const searchHandler = (value: any) => {
+    setSearchValue(value);
+  }
 
   return (
     <Row className="gap-5 w-full">
@@ -80,6 +87,15 @@ const Items = () => {
             Create Item
           </AppButton>
         </Row>
+      </Col>
+
+      <Col span={24}>
+        <DebounceSearchBar
+          prefix={<IoIosSearch size={20} color="gray" />}
+          setSearchDebouncedValue={searchHandler}
+          className="h-11"
+          suffix={loading && <Loader size="10" />}
+        />
       </Col>
 
       <Col span={24}>

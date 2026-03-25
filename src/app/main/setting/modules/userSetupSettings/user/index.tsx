@@ -50,11 +50,10 @@ const Users = ({ refreshLocationTypes }: LocationTypesProps) => {
         }
     }, [refreshLocationTypes])
 
-    const handlePageChange = (page: number) => {
-        // fetchLocationTypes(page, pageSize);
+    const handlePageChange = (page: number, pageSize: number) => {
         setPagination((prev) => ({
             ...prev,
-            page: page,
+            page, pageSize
         }));
     };
 
