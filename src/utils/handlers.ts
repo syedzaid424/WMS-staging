@@ -1,4 +1,4 @@
-import { locationApiRoutes } from "../app/main/location/utils/apiRoutes";
+import { warehouseApiRoutes } from "../app/main/warehouse/utils/apiRoutes";
 import { useAuthStore } from "../store/auth/authStore";
 import { message } from "antd";
 
@@ -6,7 +6,7 @@ import { message } from "antd";
 const downloadPDF = async (text: any, filename = 'qrcode.pdf') => {
     const { accessToken } = useAuthStore.getState()
     const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}${locationApiRoutes.getQRcode}?text=${text}&width=${200}&height=${200}`,
+        `${import.meta.env.VITE_API_BASE_URL}${warehouseApiRoutes.getQRcode}?text=${text}&width=${200}&height=${200}`,
         {
             method: "GET",
             headers: {

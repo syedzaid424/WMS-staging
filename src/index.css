@@ -61,8 +61,6 @@
     .ant-btn.ant-btn-color-default:focus,
     .ant-btn.ant-btn-color-default:active,
     .ant-btn.ant-btn-color-default:focus-visible {
-        background-color: var(--color-text-headings) !important;
-        color: var(--color-text-light) !important;
         opacity: 0.9;
         border: none !important;
         box-shadow: none !important;

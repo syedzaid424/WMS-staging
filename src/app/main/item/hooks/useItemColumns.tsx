@@ -96,7 +96,6 @@ const useItemColumns = () => {
                 render: (_, record) => (
                     <div className="flex items-center gap-3">
                         <AppButton
-                            type="text"
                             icon={<EditOutlined />}
                             onClick={() => handleItemDetails(record)}
                         />

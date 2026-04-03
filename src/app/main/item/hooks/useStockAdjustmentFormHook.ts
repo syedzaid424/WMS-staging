@@ -3,8 +3,8 @@ import type { FieldType } from '../../../../components/dynamicForm'
 import type { ItemLocationRow } from '../../../../types/main/item'
 import type { SelectInterface } from '../../../../utils/types';
 import { useInfiniteSelectFetch } from '../../../../hooks/useInfiniteSelectFetch';
-import { locationApiRoutes } from '../../location/utils/apiRoutes';
 import type { Location } from '../../../../types/main/location';
+import { warehouseApiRoutes } from '../../warehouse/utils/apiRoutes';
 
 interface UseStockAdjustmentFormHookInterface {
     adjustmentStockRecord: null | ItemLocationRow;
@@ -36,7 +36,7 @@ const useStockAdjustmentFormHook = ({ adjustmentStockRecord, adjustmentStockModa
         Location,
         SelectInterface
     >({
-        endpoint: locationApiRoutes.getLocations,
+        endpoint: warehouseApiRoutes.getLocations,
         mapOption: (w) => ({
             label: w.name,
             value: w.code,

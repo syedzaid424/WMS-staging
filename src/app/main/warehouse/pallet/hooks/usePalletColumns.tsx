@@ -1,0 +1,89 @@
+import type { ColumnsType } from "antd/es/table"
+import { useMemo } from "react"
+import type { PalletRow } from "../../../../../types/main/pallet"
+import { Tag } from "antd"
+import dayjs from "dayjs"
+import AppButton from "../../../../../components/button"
+import { FiEye } from "react-icons/fi";
+import { BsQrCode } from "react-icons/bs"
+
+interface UsePalletColumnsInterface {
+    handlePalletDetails: (code: string) => void;
+    handleQR: (record: any) => void;
+}
+
+const usePalletColumns = ({ handlePalletDetails, handleQR }: UsePalletColumnsInterface) => {
+
+    const columns = useMemo<ColumnsType<PalletRow>>(() => (
+        [
+            {
+                title: "Pallet Code / Name",
+                dataIndex: "palletCode",
+                key: "palletCode",
+            },
+            {
+                title: "Total Boxes",
+                dataIndex: "totalItems",
+                key: "totalItems",
+            },
+            {
+                title: "Model No",
+                dataIndex: "itemCode",
+                key: "itemCode",
+                render: (_, record) => (
+                    <span>{record?.itemCode ? record?.itemCode : '-'}</span>
+                )
+            },
+            {
+                title: "Created At",
+                dataIndex: "updatedAt",
+                key: "updatedAt",
+                render: (date: string) =>
+                    date ? dayjs(date).format("DD MMM YYYY, hh:mm A") : "-",
+            },
+            {
+                title: "Location's Name",
+                dataIndex: "location",
+                key: "location",
+                render: (_, record) => (
+                    <span>{record?.locationName}</span>
+                )
+            },
+            {
+                title: "Status",
+                dataIndex: "status",
+                key: "status",
+                render: (_, record) => (
+                    <Tag color={record?.isFull ? "red" : "green"}>{
+                        record?.isFull ? "Pallet full" : "Pallet Empty"
+                    }</Tag>
+                ),
+            },
+            {
+                title: "Action",
+                key: "action",
+                width: 80,
+                render: (_, record) => (
+                    <div className="flex items-center gap-3">
+                        <AppButton
+                            title="View Details"
+                            icon={<FiEye />}
+                            onClick={() => handlePalletDetails(record?.palletCode)}
+                        />
+                        <AppButton
+                            title="Generate QR Code"
+                            className="bg-[#5A6268]!"
+                            icon={<BsQrCode />}
+                            onClick={() => handleQR(record?.palletCode)}
+                        />
+                    </div>
+                ),
+            },
+        ]
+    ), [])
+
+    return columns
+}
+
+export default usePalletColumns
+

@@ -145,7 +145,7 @@ const AppLayout = () => {
 
                     {/* Logo */}
                     <div className="h-16 flex items-center justify-center text-white font-bold">
-                        LOGO
+                        WMS
                     </div>
 
                     {/* Main Menu */}

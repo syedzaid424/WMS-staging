@@ -1,16 +1,16 @@
 import React, { useMemo } from 'react'
-import { useMutation } from '../../../../hooks/useMutatation';
-import type { ApiResponse, SelectInterface } from '../../../../utils/types';
-import AppModal from '../../../../components/modal';
-import DynamicForm from '../../../../components/dynamicForm';
-import { locationValidationSchema } from '../schemas';
-import { useInfiniteSelectFetch } from '../../../../hooks/useInfiniteSelectFetch';
-import { locationApiRoutes } from '../utils/apiRoutes';
-import useFetch from '../../../../hooks/useFetch';
-import { useAuthStore } from '../../../../store/auth/authStore';
-import { useWarehouseStore } from '../../../../store/main/warehouseStore';
-import type { Location, LocationFormValues, LocationTypeListingResponse } from '../../../../types/main/location';
 import useLocationMutationFormHook from '../hooks/useLocationMutationFormHook';
+import { useAuthStore } from '../../../../../store/auth/authStore';
+import { useWarehouseStore } from '../../../../../store/main/warehouseStore';
+import { useInfiniteSelectFetch } from '../../../../../hooks/useInfiniteSelectFetch';
+import type { ApiResponse, SelectInterface } from '../../../../../utils/types';
+import useFetch from '../../../../../hooks/useFetch';
+import type { Location, LocationFormValues, LocationTypeListingResponse } from '../../../../../types/main/location';
+import { useMutation } from '../../../../../hooks/useMutatation';
+import AppModal from '../../../../../components/modal';
+import DynamicForm from '../../../../../components/dynamicForm';
+import { locationValidationSchema } from '../schemas';
+import { warehouseApiRoutes } from '../../utils/apiRoutes';
 
 interface locationMutatingModal {
     open: boolean,
@@ -40,7 +40,7 @@ const LocationMutatingModal = ({ open, setOpen, setRefreshLocations }: locationM
         Location,
         SelectInterface
     >({
-        endpoint: locationApiRoutes.getLocations,
+        endpoint: warehouseApiRoutes.getLocations,
         mapOption: (w) => ({
             label: w.name,
             value: w.id,
@@ -53,7 +53,7 @@ const LocationMutatingModal = ({ open, setOpen, setRefreshLocations }: locationM
 
     // location-type listing for select.
     const { loading: locationTypeLoading, data: availableLocationTypes } = useFetch<ApiResponse<LocationTypeListingResponse[]>>({
-        endpoint: locationApiRoutes.getLocationTypes,
+        endpoint: warehouseApiRoutes.getLocationTypes,
         enabled: open
     });
 
@@ -76,7 +76,7 @@ const LocationMutatingModal = ({ open, setOpen, setRefreshLocations }: locationM
     );
 
     const { mutate, loading } = useMutation<ApiResponse<any>>({
-        endpoint: locationApiRoutes.createLocation,
+        endpoint: warehouseApiRoutes.createLocation,
         method: "post",
         showSuccessMessage: true,
     });
@@ -105,7 +105,7 @@ const LocationMutatingModal = ({ open, setOpen, setRefreshLocations }: locationM
         [{ label: user?.warehouseName!, value: Number(user?.warehouseId) || '0' }]
     ), [user?.warehouseName, user?.warehouseId]);
 
-    
+
     const formFields = useLocationMutationFormHook({
         availableLocationTypesListing,
         locationTypeLoading,

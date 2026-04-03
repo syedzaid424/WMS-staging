@@ -31,6 +31,7 @@ export const buildUrl = (
 ) => {
     if (!pathParams) return endpoint;
     let url = endpoint;
+    console.log(url)
     return url + `/${pathParams}`;
 };
 

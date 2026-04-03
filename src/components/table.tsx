@@ -80,6 +80,7 @@ function AppTable<T extends object>({
     showPagination = true,
     rowKey,
     editable,
+    className = "",
     ...rest
 }: AppTableProps<T>) {
     const [form] = Form.useForm();
@@ -199,6 +200,7 @@ function AppTable<T extends object>({
             }
             columns={mergedColumns as ColumnsType<T>}
             dataSource={dataSource}
+            className={className}
             pagination={
                 showPagination
                     ? {

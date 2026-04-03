@@ -6,7 +6,8 @@ import { RiDashboardHorizontalFill } from "react-icons/ri";
 import { TiThList } from "react-icons/ti";
 import { FiSettings } from "react-icons/fi";
 import { FaFileExport } from "react-icons/fa6";
-
+import { MdWarehouse } from "react-icons/md";
+import { MdPallet } from "react-icons/md";
 
 // purpose of this hook is to render those sidebar items that logged in user have access to.
 const useVisibleSidebarItem = () => {
@@ -21,8 +22,20 @@ const useVisibleSidebarItem = () => {
         { key: appRoutes.ITEM, label: "Item", icon: <TiThList /> },
         {
             key: appRoutes.LOCATION,
-            label: "Location",
-            icon: <FaWarehouse />,
+            label: "Warehouse",
+            icon: <MdWarehouse />,
+            children: [
+                {
+                    key: appRoutes.WAREHOUSE_LOCATION,
+                    label: "Locations",
+                    icon: <FaWarehouse />,
+                },
+                {
+                    key: appRoutes.WAREHOUSE_PALLET,
+                    label: "Pallets",
+                    icon: <MdPallet />,
+                },
+            ]
         },
         {
             key: appRoutes.IMPORT_EXPORT,

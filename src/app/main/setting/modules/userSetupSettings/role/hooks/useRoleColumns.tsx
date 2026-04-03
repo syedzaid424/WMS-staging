@@ -31,7 +31,6 @@ const useRoleColumns = ({ handleEdit }: UseRoleColumns) => {
                 width: 80,
                 render: (_, record) => (
                     <AppButton
-                        type="text"
                         icon={<EditOutlined />}
                         onClick={() => handleEdit(record)}
                     />

@@ -1,21 +1,22 @@
 import { Col, Row } from "antd"
-import AppTitle from "../../../components/title"
-import AppButton from "../../../components/button"
-import AppTable from "../../../components/table"
 import { useEffect, useMemo, useState } from "react"
 import type { ColumnsType } from "antd/es/table"
-import useFetch from "../../../hooks/useFetch"
-import type { ApiResponse } from "../../../utils/types"
 import LocationMutatingModal from "./components/locationMutationModal"
-import { locationApiRoutes } from "./utils/apiRoutes"
-import { useAuthStore } from "../../../store/auth/authStore"
 import { EditOutlined } from "@ant-design/icons";
 import { BsQrCode } from "react-icons/bs";
-import { downloadPDF } from "../../../utils/handlers"
-import type { LocationResponse, LocationRow } from "../../../types/main/location"
 import { IoIosSearch } from "react-icons/io";
-import DebounceSearchBar from "../../../components/debounceSearch"
-import Loader from "../../../components/loader"
+import { useAuthStore } from "../../../../store/auth/authStore"
+import type { ApiResponse } from "../../../../utils/types"
+import type { LocationResponse, LocationRow } from "../../../../types/main/location"
+import useFetch from "../../../../hooks/useFetch"
+import { downloadPDF } from "../../../../utils/handlers"
+import AppButton from "../../../../components/button"
+import AppTitle from "../../../../components/title"
+import DebounceSearchBar from "../../../../components/debounceSearch"
+import Loader from "../../../../components/loader"
+import AppTable from "../../../../components/table"
+import { warehouseApiRoutes } from "../utils/apiRoutes";
+
 
 const Location = () => {
 
@@ -41,7 +42,7 @@ const Location = () => {
 
     // to generate Locations listing.
     const { loading, data } = useFetch<ApiResponse<LocationResponse>>({
-        endpoint: locationApiRoutes.getLocations,
+        endpoint: warehouseApiRoutes.getLocations,
         params,
         refreshTrigger: [refreshLocations, user?.warehouseId],
         showSuccessMessage: false
@@ -119,13 +120,13 @@ const Location = () => {
                 render: (_, record) => (
                     <div className="flex items-center gap-3">
                         <AppButton
-                            type="text"
                             icon={<EditOutlined />}
+                            title="Edit Details"
                             onClick={() => handleEdit(record)}
                         />
                         <AppButton
-                            type="text"
-                            title="generate QR code"
+                            title="Generate QR Code"
+                            className="bg-[#5A6268]!"
                             icon={<BsQrCode />}
                             onClick={() => handleQR(record)}
                         />

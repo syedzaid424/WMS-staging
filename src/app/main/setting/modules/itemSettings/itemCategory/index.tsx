@@ -83,7 +83,6 @@ const ItemCategories = ({ refreshItemCategories }: ItemCategoriesProps) => {
         width: 80,
         render: (_, record) => (
           <Button
-            type="text"
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           />

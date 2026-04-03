@@ -7,14 +7,8 @@ const appRoutes = {
     'ITEM_DETAILS': '/item/details',
     'INVENTORY': '/inventory',
     'LOCATION': '/location',
-    'CONTACT': '/contact',
-    'STOCK_WARNING': '/stock/warnings',
-    'STOCK_REPLENISHMENTS': '/stock/replenishments',
-    'STOCK_TRANSFERS': '/stock/transfers',
-    'STOCK_TAKES': '/stock/takes',
-    'WAREHOUSE_ASSEMBLY': '/warehouse/assembly',
     'WAREHOUSE_LOCATION': '/warehouse/locations',
-    'WAREHOUSE_DASHBOARD': '/warehouse/dashboard',
+    'WAREHOUSE_PALLET': '/warehouse/pallets',
     'IMPORT_EXPORT': '/import-export',
     'IMPORT_EXPORT_LOCATIONS': '/import-export/locations',
     'IMPORT_EXPORT_ITEMS': '/import-export/items',
@@ -52,6 +46,11 @@ const apiRoutes = {
     'CREATE_LOCATION': '/location',
     'GET_LOCATION_TYPES': '/location-type',
     'CREATE_LOCATION_TYPE': '/location-type',
+    // PALLETS
+    'GET_PALLETS': '/pallet',
+    'CREATE_PALLET': '/pallet',
+    'GET_PALLET': '/pallet-item/by-code',
+    'CLEAR_PALLET': '/pallet/clear',
     // USER UPDATES
     'UPDATE_USER_WAREHOUSE': '/user/warehouse',
     'GET_ROLES': '/role',
@@ -81,9 +80,12 @@ const apiRoutes = {
     'UPLOAD_IMAGE': '/images/upload'
 }
 
+const palletSpecificLocationType = "STAGING"
+
 export {
     appRoutes,
     authChannel,
     routePrefix,
-    apiRoutes
+    apiRoutes,
+    palletSpecificLocationType
 }

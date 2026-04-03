@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import type { FieldType } from "../../../../components/dynamicForm";
-import type { SelectInterface } from '../../../../utils/types';
+import type { SelectInterface } from '../../../../../utils/types';
+import type { FieldType } from '../../../../../components/dynamicForm';
+
     
 interface UseLocationMutationFormHook {
     availableLocationTypesListing: SelectInterface[];

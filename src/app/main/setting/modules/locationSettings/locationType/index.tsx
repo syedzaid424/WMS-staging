@@ -94,7 +94,6 @@ const LocationTypes = ({ refreshLocationTypes }: LocationTypesProps) => {
         width: 80,
         render: (_, record) => (
           <AppButton
-            type="text"
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           />
