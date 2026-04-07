@@ -49,16 +49,16 @@ const usePalletColumns = ({ handlePalletDetails, handleQR }: UsePalletColumnsInt
                     <span>{record?.locationName}</span>
                 )
             },
-            {
-                title: "Status",
-                dataIndex: "status",
-                key: "status",
-                render: (_, record) => (
-                    <Tag color={record?.isFull ? "red" : "green"}>{
-                        record?.isFull ? "Pallet full" : "Pallet Empty"
-                    }</Tag>
-                ),
-            },
+            // {
+            //     title: "Status",
+            //     dataIndex: "status",
+            //     key: "status",
+            //     render: (_, record) => (
+            //         <Tag color={record?.isFull ? "red" : "green"}>{
+            //             record?.isFull ? "Pallet full" : "Pallet Empty"
+            //         }</Tag>
+            //     ),
+            // },
             {
                 title: "Action",
                 key: "action",
