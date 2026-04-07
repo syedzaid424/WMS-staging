@@ -1,7 +1,6 @@
 import type { ColumnsType } from "antd/es/table"
 import { useMemo } from "react"
 import type { PalletRow } from "../../../../../types/main/pallet"
-import { Tag } from "antd"
 import dayjs from "dayjs"
 import AppButton from "../../../../../components/button"
 import { FiEye } from "react-icons/fi";
