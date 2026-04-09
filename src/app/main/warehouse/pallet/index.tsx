@@ -19,16 +19,19 @@ import { useMutation } from "../../../../hooks/useMutatation"
 
 const Pallets = () => {
 
-    const [pagination, setPagination] = useState({
+    const [filters, setFilters] = useState({
         page: 1,
         pageSize: 50,
         total: 0,
+        search: ""
     });
 
-    const [searchValue, setSearchValue] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const [viewPalletItemsModal, setViewPalletItemsModal] = useState(false);
-    const [palletItemsListingId, setPalletItemsListingId] = useState('');
+    const [palletItemsListingId, setPalletItemsListingId] = useState<Record<string, string | null>>({
+        code: "",
+        modelNo: ""
+    });
     const [refreshPallets, setRefreshLocations] = useState(0);
     const [refreshPallet, setRefreshPallet] = useState(0);
     const { user } = useAuthStore();
@@ -42,16 +45,18 @@ const Pallets = () => {
 
     const params = useMemo(
         () => ({
-            pageNo: pagination.page - 1,
-            pageSize: pagination.pageSize,
-            search: searchValue
+            pageNo: filters.page - 1,
+            pageSize: filters.pageSize,
+            search: filters.search
         }),
-        [pagination.page, pagination.pageSize, searchValue]
+        [filters]
     );
 
-    const handlePalletDetails = (code: string) => {
+    const handlePalletDetails = (code: string, modelNo: string | null) => {
         setViewPalletItemsModal(true);
-        setPalletItemsListingId(code);
+        setPalletItemsListingId({
+            code, modelNo
+        });
     }
 
     // clear pallet items
@@ -81,7 +86,7 @@ const Pallets = () => {
     useEffect(() => {
         if (!data) return;
         const apiData = data.data;
-        setPagination((prev) => ({
+        setFilters((prev) => ({
             ...prev,
             total: apiData?.totalElements || 0,
         }));
@@ -92,15 +97,16 @@ const Pallets = () => {
     }
 
     const searchHandler = (value: any) => {
-        setSearchValue(value);
+        setFilters(prev => ({ ...prev, search: value, page: 1 }));
     }
 
     const handlePageChange = (page: number, pageSize: number) => {
-        setPagination((prev) => ({
+        setFilters((prev) => ({
             ...prev,
             page, pageSize
         }));
     };
+
 
     return (
         <Row className="gap-5 w-full">
@@ -122,6 +128,7 @@ const Pallets = () => {
                 <DebounceSearchBar
                     prefix={<IoIosSearch size={20} color="gray" />}
                     setSearchDebouncedValue={searchHandler}
+                    placeholder="Search by Code, Model, Location"
                     className="h-11"
                     suffix={loading && <Loader size="10" />}
                 />
@@ -132,9 +139,9 @@ const Pallets = () => {
                     columns={columns}
                     dataSource={data?.data?.pallets}
                     loading={loading}
-                    total={pagination.total}
-                    currentPage={pagination.page}
-                    pageSize={pagination.pageSize}
+                    total={filters.total}
+                    currentPage={filters.page}
+                    pageSize={filters.pageSize}
                     onPageChange={handlePageChange}
                     scroll={{ x: "max-content" }}
                 />

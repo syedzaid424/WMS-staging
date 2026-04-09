@@ -14,7 +14,7 @@ import AppButton from "../../../../../components/button";
 interface PalletItemsListingModalInterface {
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    palletDetailId: string;
+    palletDetailId: Record<string, string | null>;
     deletePalletItemsHandler: (code: string) => void;
     palletClearLoading: boolean;
     refreshPallet: number
@@ -25,7 +25,7 @@ const PalletItemsListingModal = ({ open, setOpen, palletDetailId, deletePalletIt
     // to generate pallets listing.
     const { loading, data } = useFetch<ApiResponse<PalletDetailsResponse>>({
         endpoint: warehouseApiRoutes.getPallet,
-        pathParams: palletDetailId,
+        params: palletDetailId,
         refreshTrigger: refreshPallet,
         showSuccessMessage: false,
         enabled: open
@@ -57,19 +57,19 @@ const PalletItemsListingModal = ({ open, setOpen, palletDetailId, deletePalletIt
                                         Pallet Code / Name
                                     </AppText>
                                     <AppText className="text-sm sm:text-base md:text-lg font-medium wrap-break-word">
-                                        {data?.data?.palletCode}
+                                        {data?.data?.palletCode ? data?.data?.palletCode : "-"}
                                     </AppText>
                                 </div>
 
                                 {/* Item 2 */}
-                                {/* <div className="flex flex-col flex-1 min-w-37.5">
+                                <div className="flex flex-col flex-1 min-w-37.5">
                                     <AppText className="text-xs sm:text-sm text-gray-500">
-                                        Is Full
+                                        Is Pallet Full
                                     </AppText>
                                     <AppText className="text-sm sm:text-base md:text-lg font-medium">
                                         {data?.data?.isFull ? "Yes" : "No"}
                                     </AppText>
-                                </div> */}
+                                </div>
                             </div>
                         </Col>
                         <Col span={24}>

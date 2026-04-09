@@ -5,9 +5,10 @@ import dayjs from "dayjs"
 import AppButton from "../../../../../components/button"
 import { FiEye } from "react-icons/fi";
 import { BsQrCode } from "react-icons/bs"
+import { Tag } from "antd"
 
 interface UsePalletColumnsInterface {
-    handlePalletDetails: (code: string) => void;
+    handlePalletDetails: (code: string, model: string | null) => void;
     handleQR: (record: any) => void;
 }
 
@@ -48,16 +49,16 @@ const usePalletColumns = ({ handlePalletDetails, handleQR }: UsePalletColumnsInt
                     <span>{record?.locationName}</span>
                 )
             },
-            // {
-            //     title: "Status",
-            //     dataIndex: "status",
-            //     key: "status",
-            //     render: (_, record) => (
-            //         <Tag color={record?.isFull ? "red" : "green"}>{
-            //             record?.isFull ? "Pallet full" : "Pallet Empty"
-            //         }</Tag>
-            //     ),
-            // },
+            {
+                title: "Status",
+                dataIndex: "status",
+                key: "status",
+                render: (_, record) => (
+                    <Tag color={record?.isFull ? "red" : "green"}>{
+                        record?.isFull ? "Pallet full" : "Pallet Empty"
+                    }</Tag>
+                ),
+            },
             {
                 title: "Action",
                 key: "action",
@@ -65,9 +66,10 @@ const usePalletColumns = ({ handlePalletDetails, handleQR }: UsePalletColumnsInt
                 render: (_, record) => (
                     <div className="flex items-center gap-3">
                         <AppButton
-                            title="View Details"
+                            title={record?.totalItems === 0 ? "No details to display" : "View details"}
                             icon={<FiEye />}
-                            onClick={() => handlePalletDetails(record?.palletCode)}
+                            disabled={record?.totalItems == 0 ? true : false}
+                            onClick={() => handlePalletDetails(record?.palletCode, record?.itemCode)}
                         />
                         <AppButton
                             title="Generate QR Code"
