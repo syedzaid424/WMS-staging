@@ -62,14 +62,14 @@ const PalletItemsListingModal = ({ open, setOpen, palletDetailId, deletePalletIt
                                 </div>
 
                                 {/* Item 2 */}
-                                <div className="flex flex-col flex-1 min-w-37.5">
+                                {/* <div className="flex flex-col flex-1 min-w-37.5">
                                     <AppText className="text-xs sm:text-sm text-gray-500">
                                         Is Pallet Full
                                     </AppText>
                                     <AppText className="text-sm sm:text-base md:text-lg font-medium">
                                         {data?.data?.isFull ? "Yes" : "No"}
                                     </AppText>
-                                </div>
+                                </div> */}
                             </div>
                         </Col>
                         <Col span={24}>
