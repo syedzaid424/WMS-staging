@@ -8,6 +8,7 @@ import { FiSettings } from "react-icons/fi";
 import { FaFileExport } from "react-icons/fa6";
 import { MdWarehouse } from "react-icons/md";
 import { MdPallet } from "react-icons/md";
+import { PiShippingContainerFill } from "react-icons/pi";
 
 // purpose of this hook is to render those sidebar items that logged in user have access to.
 const useVisibleSidebarItem = () => {
@@ -34,6 +35,11 @@ const useVisibleSidebarItem = () => {
                     key: appRoutes.WAREHOUSE_PALLET,
                     label: "Pallets",
                     icon: <MdPallet />,
+                },
+                {
+                    key: appRoutes.WAREHOUSE_CONTAINER,
+                    label: "Containers",
+                    icon: <PiShippingContainerFill />,
                 },
             ]
         },

@@ -13,7 +13,6 @@ const useItemColumns = () => {
 
     const navigate = useNavigate();
 
-    // to generate QR code.
     const handleItemDetails = async (record: ItemRow) => {
         navigate(`${appRoutes.ITEM_DETAILS}/${record?.code}?type=edit`)
     }

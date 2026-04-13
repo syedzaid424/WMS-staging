@@ -12,6 +12,8 @@ const ItemDetails = lazy(() => import('../app/main/item/components/itemDetails')
 const Inventory = lazy(() => import('../app/main/inventory/index'))
 const Location = lazy(() => import('../app/main/warehouse/location'))
 const Pallet = lazy(() => import('../app/main/warehouse/pallet'));
+const Container = lazy(() => import('../app/main/warehouse/container'));
+const ContainerDetails = lazy(() => import('../app/main/warehouse/container/components/containerItemsDetail'));
 const Setting = lazy(() => import('../app/main/setting/index'));
 const LocationSettings = lazy(() => import('../app/main/setting/modules/locationSettings'));
 const ItemSettings = lazy(() => import('../app/main/setting/modules/itemSettings'));
@@ -33,6 +35,8 @@ const AppRoutes = () => {
                     <Route path={appRoutes.INVENTORY} element={<Inventory />} />
                     <Route path={appRoutes.WAREHOUSE_LOCATION} element={<Location />} />
                     <Route path={appRoutes.WAREHOUSE_PALLET} element={<Pallet />} />
+                    <Route path={appRoutes.WAREHOUSE_CONTAINER} element={<Container />} />
+                    <Route path={`${appRoutes.WAREHOUSE_CONTAINER_DETAIL}/:id`} element={<ContainerDetails />} />
                     <Route path={appRoutes.SETTINGS} element={<Setting />} />
                     <Route path={appRoutes.SETTINGS_LOCATION} element={<LocationSettings />} />
                     <Route path={appRoutes.SETTINGS_ITEM} element={<ItemSettings />} />

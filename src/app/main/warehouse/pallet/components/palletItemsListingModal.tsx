@@ -14,7 +14,7 @@ import AppButton from "../../../../../components/button";
 interface PalletItemsListingModalInterface {
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    palletDetailId: Record<string, string | null>;
+    palletDetailId: Record<string, string | null | boolean>;
     deletePalletItemsHandler: (code: string) => void;
     palletClearLoading: boolean;
     refreshPallet: number

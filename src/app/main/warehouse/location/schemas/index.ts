@@ -6,5 +6,5 @@ export const locationValidationSchema = {
     description: yup.string().nullable(),
     locationTypeId: yup.string().required("Location type is required"),
     warehouseId: yup.string().required("Warehouse is required"),
-    parentLocationId: yup.string().required("Parent location is required")
+    // parentLocationId: yup.string().required("Parent location is required")
 };

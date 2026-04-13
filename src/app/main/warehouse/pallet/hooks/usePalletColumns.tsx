@@ -35,6 +35,14 @@ const usePalletColumns = ({ handlePalletDetails, handleQR }: UsePalletColumnsInt
                 )
             },
             {
+                title: "Container No",
+                dataIndex: "containerNo",
+                key: "containerNo",
+                render: (_, record) => (
+                    <span>{record?.containerNo ? record?.containerNo : '-'}</span>
+                )
+            },
+            {
                 title: "Created At",
                 dataIndex: "updatedAt",
                 key: "updatedAt",
@@ -54,7 +62,7 @@ const usePalletColumns = ({ handlePalletDetails, handleQR }: UsePalletColumnsInt
                 dataIndex: "status",
                 key: "status",
                 render: (_, record) => (
-                    <Tag color={record?.isFull ? "red" : "green"}>{
+                    <Tag color={record?.isFull ? "blue" : "green"}>{
                         record?.isFull ? "Pallet full" : "Pallet Empty"
                     }</Tag>
                 ),

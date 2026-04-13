@@ -11,7 +11,8 @@ interface Pallet {
     locationCode: string | null;
     updatedBy: string | null;
     updatedAt: string | null;
-    isFull: boolean
+    isFull: boolean;
+    containerNo: string | null
 }
 
 interface PalletRow extends Pallet { }
