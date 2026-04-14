@@ -32,7 +32,8 @@ const routePrefix = [
     appRoutes.INVENTORY,
     appRoutes.LOCATION,
     appRoutes.SETTINGS,
-    appRoutes.IMPORT_EXPORT_LOCATIONS
+    appRoutes.WAREHOUSE_CONTAINER,
+
 ]
 
 // broadcasting channel for syncing login and logout in multi tabs.

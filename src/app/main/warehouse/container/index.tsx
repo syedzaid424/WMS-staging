@@ -12,10 +12,16 @@ import { useQueryFilters } from "../../../../hooks/useQueryFilter"
 import useContainerColumns from "./hooks/useContainerColumns"
 import { warehouseApiRoutes } from "../utils/apiRoutes"
 
+const defaultFilters = {
+    page: 1,
+    pageSize: 50,
+    search: ""
+}
+
 const Container = () => {
 
     // filters hook 
-    const { filters, updateFilters } = useQueryFilters();
+    const { filters, updateFilters } = useQueryFilters(defaultFilters);
 
     const [totalRecordsCount, setTotalRecordsCount] = useState(0);
     // const [viewContainerItemsModal, setViewContainerItemsModal] = useState(false);
@@ -42,8 +48,8 @@ const Container = () => {
 
     const searchHandler = (value: any) => {
         updateFilters({
+            page: 1,
             search: value,
-            page: 1
         })
     }
 

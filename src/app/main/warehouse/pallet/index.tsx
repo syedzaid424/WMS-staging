@@ -18,10 +18,16 @@ import { downloadPDF } from "../../../../utils/handlers"
 import { useMutation } from "../../../../hooks/useMutatation"
 import { useQueryFilters } from "../../../../hooks/useQueryFilter"
 
+const defaultFilters = {
+    page: 1,
+    pageSize: 50,
+    search: ""
+}
+
 const Pallets = () => {
 
     // filters hook 
-    const { filters, updateFilters } = useQueryFilters();
+    const { filters, updateFilters } = useQueryFilters(defaultFilters);
 
     const [totalRecordsCount, setTotalRecordsCount] = useState(0);
     const [openModal, setOpenModal] = useState(false);

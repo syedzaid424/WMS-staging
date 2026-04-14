@@ -1,21 +1,44 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 
-export const useQueryFilters = () => {
+type Primitive = string | number | boolean;
+
+export const useQueryFilters = <T extends Record<string, Primitive>>(defaults: T) => {
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const filters = useMemo(() => ({
-        page: Number(searchParams.get("page") || 1),
-        pageSize: Number(searchParams.get("pageSize") || 50),
-        search: searchParams.get("search") || ""
-    }), [searchParams]);
+    // derive filters dynamically
+    const filters = useMemo(() => {
+        const result: Record<string, any> = {};
 
-    const updateFilters = (updates: Partial<typeof filters>) => {
-        const newParams = new URLSearchParams(searchParams);
+        Object.keys(defaults).forEach((key) => {
+            const paramValue = searchParams.get(key);
+
+            if (paramValue === null) {
+                result[key] = defaults[key];
+            } else {
+                // auto type casting based on default value
+                if (typeof defaults[key] === "number") {
+                    result[key] = Number(paramValue);
+                } else if (typeof defaults[key] === "boolean") {
+                    result[key] = paramValue === "true";
+                } else {
+                    result[key] = paramValue;
+                }
+            }
+        });
+
+        return result as T;
+    }, [searchParams, defaults]);
+
+    const updateFilters = (updates: Partial<T>) => {
+        const newParams = new URLSearchParams(window.location.search);
 
         Object.entries(updates).forEach(([key, value]) => {
-            if (!value) newParams.delete(key);
-            else newParams.set(key, String(value));
+            if (value === undefined || value === null || value === "") {
+                newParams.delete(key);
+            } else {
+                newParams.set(key, String(value));
+            }
         });
 
         setSearchParams(newParams);

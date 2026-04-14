@@ -9,7 +9,7 @@ import CreateItem from '../app/main/item/components/createItem';
 const Dashboard = lazy(() => import('../app/main/dashboard/index'));
 const Item = lazy(() => import('../app/main/item/index'));
 const ItemDetails = lazy(() => import('../app/main/item/components/itemDetails'));
-const Inventory = lazy(() => import('../app/main/inventory/index'))
+const Inventory = lazy(() => import('../app/main/inventory'))
 const Location = lazy(() => import('../app/main/warehouse/location'))
 const Pallet = lazy(() => import('../app/main/warehouse/pallet'));
 const Container = lazy(() => import('../app/main/warehouse/container'));
