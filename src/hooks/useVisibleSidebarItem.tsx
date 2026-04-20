@@ -9,6 +9,7 @@ import { FaFileExport } from "react-icons/fa6";
 import { MdWarehouse } from "react-icons/md";
 import { MdPallet } from "react-icons/md";
 import { PiShippingContainerFill } from "react-icons/pi";
+import { MdInventory } from "react-icons/md";
 
 // purpose of this hook is to render those sidebar items that logged in user have access to.
 const useVisibleSidebarItem = () => {
@@ -21,6 +22,7 @@ const useVisibleSidebarItem = () => {
     const mainItems = [
         { key: appRoutes.DASHBOARD, label: "Dashboard", icon: <RiDashboardHorizontalFill /> },
         { key: appRoutes.ITEM, label: "Item", icon: <TiThList /> },
+        { key: appRoutes.INVENTORY, label: "Inventory", icon: <MdInventory /> },
         {
             key: appRoutes.LOCATION,
             label: "Warehouse",
