@@ -8,28 +8,27 @@ import { sortMinMaxInRange } from "../../../utils/handlers";
 import AppTitle from "../../../components/title";
 import AppTable from "../../../components/table";
 import Filterbar from "../../../components/filterbar/filterbar";
-import { defaultFilterSchema } from "../../../components/filterbar/data";
+import { defaultFilterSchema } from "../../../components/filterbar/util/data";
 import { ACTIVE } from "../warehouse/location/constants/constants";
 import { inventoriesApiRoutes } from "./utils/apiRoutes";
-import EllipsisCell from "../../../components/ellipsisCell/ellipsisCell";
-import StatusContent from "../warehouse/location/components/statusContent";
-import type { InventoryResponse, InventoryRow } from "../../../types/main/inventory";
-import TagCell from "../../../components/tagCell";
+import type { InventoryListFilterValues, InventoryResponse, InventoryRow } from "../../../types/main/inventory";
 import { useNavigate, useSearchParams } from 'react-router'
-import { locationDestinationUrl } from "./constant/constant";
-import AppImage from "../../../components/image";
+import type { FilterField } from "../../../components/filterbar/types/types";
+import { getInventoryColumns } from "./utils/getInventoryColumns";
+import { appRoutes } from "../../../utils/constants";
 
 
 const Inventory = () => {
+  const inventoryFilterSchema = defaultFilterSchema as FilterField<InventoryListFilterValues>[];
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 10,
     total: 0,
   });
-
-  const [filtersValues, setFiltersValues] = useState({
+  const [filtersValues, setFiltersValues] = useState<InventoryListFilterValues>({
     search: searchParams.get('search') ?? '',
     itemStatus: ACTIVE,
     inventoryStatus: ACTIVE,
@@ -84,75 +83,16 @@ const Inventory = () => {
   };
 
   const handleNavigation = useCallback((param: string) => {
-    navigate(`/${locationDestinationUrl}?search=${param}`)
+    navigate(`/${appRoutes.WAREHOUSE_LOCATION}?search=${param}`)
   }, [navigate]);
 
 
   const inventoryColumns: ColumnsType<InventoryRow> = useMemo(
-    () => [
-      {
-        title: "Image",
-        dataIndex: "imageUrl",
-        key: "imageUrl",
-        render: (_, record) => (
-          <AppImage src={record?.imageUrl}
-            className="h-15! rounded-md object-cover"
-            width={60}
-          />
-        )
-      },
-      {
-        title: "Code",
-        dataIndex: "code",
-        key: "code",
-        render: (value: string) =>
-          <span className="cursor-pointer" onClick={() => handleNavigation(value)}>
-            <TagCell value={value} color="blue" />
-          </span>
-      },
-      {
-        title: "Name",
-        dataIndex: "name",
-        key: "name",
-        render: (value: string) => <EllipsisCell text={value} />,
-      },
-      {
-        title: "Description",
-        dataIndex: "description",
-        key: "description",
-        render: (value: string) => <EllipsisCell text={value} />,
-      },
-      {
-        title: "Item Status",
-        dataIndex: "itemStatus",
-        key: "itemStatus",
-        render: (value: string) => (
-          <StatusContent status={value} />
-        ),
-      },
-      {
-        title: "Inventory Status",
-        dataIndex: "inventoryStatus",
-        key: "inventoryStatus",
-        render: (value: string) => (
-          <StatusContent status={value} />
-        ),
-      },
-      {
-        title: "Total Boxes",
-        dataIndex: "totalBoxes",
-        key: "totalBoxes",
-      },
-      {
-        title: "Total Units",
-        dataIndex: "totalUnits",
-        key: "totalUnits",
-      },
-    ],
+    () => getInventoryColumns(handleNavigation),
     [handleNavigation],
   );
 
-  const handleFilterChange = useCallback((selected: any) => {
+  const handleFilterChange = useCallback((selected: InventoryListFilterValues) => {
     setFiltersValues(selected)
   }, [])
 
@@ -170,7 +110,7 @@ const Inventory = () => {
 
       <Col span={24}>
         <Filterbar
-          schema={defaultFilterSchema}
+          schema={inventoryFilterSchema}
           onChange={handleFilterChange}
         />
       </Col>

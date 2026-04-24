@@ -13,6 +13,7 @@
     --color-bg-light: #f5f5f5;
     --color-text-headings: #014F43;
     --color-text-error: #DD0000;
+    --color-bg-error: #fd4747;
 }
 
 @layer base {
@@ -143,6 +144,10 @@
 
 .text-error-color {
     color: var(--color-text-error);
+}
+
+.error-bg {
+    background-color: var(--color-bg-error) !important;
 }
 
 a {

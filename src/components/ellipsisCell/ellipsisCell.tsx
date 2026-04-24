@@ -1,28 +1,26 @@
 import { Popover } from "antd";
-import React from "react";
 
 interface EllipsisCellProps {
-    text?: string;
-    maxWidth?: number;
+    text: string;
+    width?: number;
 }
 
-const EllipsisCell = ({ text = "", maxWidth = 180 }: EllipsisCellProps) => {
+const EllipsisCell = ({ text = "", width = 95 }: EllipsisCellProps) => {
     if (!text) return "-";
     const isLong = text.length > 20;
     return (
-        <React.Fragment>
+        <div style={{ width: `${width}%` }}>
             {isLong ? (
                 <Popover
                     content={
-                        <div className="max-w-[220px] max-h-[200px] overflow-y-auto pr-1">
+                        <div className={`max-h-50 overflow-y-auto pr-1`}>
                             {text}
                         </div>
                     }
                     trigger={["hover", "click"]}
                 >
                     <div
-                        className="truncate cursor-pointer hover:underline"
-                        style={{ maxWidth }}
+                        className="truncate cursor-pointer w-full hover:underline"
                     >
                         {text}
                     </div>
@@ -30,7 +28,7 @@ const EllipsisCell = ({ text = "", maxWidth = 180 }: EllipsisCellProps) => {
             ) : (
                 <div>{text}</div>
             )}
-        </React.Fragment>
+        </div>
     );
 };
 

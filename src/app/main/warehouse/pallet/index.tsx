@@ -21,7 +21,7 @@ import { useQueryFilters } from "../../../../hooks/useQueryFilter"
 const defaultFilters = {
     page: 1,
     pageSize: 50,
-    search: "",
+    search: ""
 }
 
 const Pallets = () => {

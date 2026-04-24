@@ -1,0 +1,85 @@
+import type { FilterField } from "../../../../../components/filterbar/types/types";
+import type { LabelVerificationListFilterValues } from "../../../../../types/main/warehouse";
+import { isPassedOptions, selectOptions } from "./constant";
+
+export const defaultSchema: FilterField<LabelVerificationListFilterValues>[] = [
+  {
+    id: 1,
+    name: "carriers",
+    colspan: {
+      xs: 24,
+      sm: 6,
+      md: 5,
+      lg: 4,
+    },
+    placeholder: "Select",
+    value: "ALL",
+    type: "select",
+    options: selectOptions,
+    default: "ALL",
+    label: "Carriers",
+  },
+  {
+    id: 2,
+    name: "warehouse",
+    colspan: {
+      xs: 24,
+      sm: 6,
+      md: 5,
+      lg: 4,
+    },
+    placeholder: "Select",
+    value: "ALL",
+    type: "select",
+    options: selectOptions,
+    default: "ALL",
+    label: "Warehouse",
+  },
+  {
+    id: 3,
+    name: "scannedBy",
+    colspan: {
+      xs: 24,
+      sm: 6,
+      md: 4,
+      lg: 5,
+    },
+    placeholder: "e.g John Doe",
+    value: "ALL",
+    type: "select",
+    options: selectOptions,
+    default: "ALL",
+    label: "Scanned By",
+  },
+  {
+    id: 4,
+    name: "dateRange",
+    colspan: {
+      xs: 24,
+      sm: 6,
+      md: 4,
+      lg: 5,
+    },
+    placeholder: "",
+    value: null,
+    type: "dateRange",
+    default: null,
+    label: "Date Range",
+  },
+  {
+    id: 5,
+    name: "isPassed",
+    colspan: {
+      xs: 24,
+      sm: 6,
+      md: 5,
+      lg: 4,
+    },
+    placeholder: "Select",
+    value: "ALL",
+    type: "select",
+    options: isPassedOptions,
+    default: "ALL",
+    label: "Is Passed",
+  },
+];
