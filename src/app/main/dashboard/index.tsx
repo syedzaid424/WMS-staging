@@ -167,7 +167,7 @@ const Dashboard = () => {
         shouldRefreshEnable: true,
         getList: (data) => data?.data?.warehouses,
         getTotal: (data) => data?.data?.totalElements,
-        pageSize: 3,     //initial pageSize here only.
+        pageSize: 50,     //initial pageSize here only.
     });
 
     // warehouse filter handler
