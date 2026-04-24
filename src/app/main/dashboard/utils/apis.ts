@@ -23,7 +23,7 @@ export const getVerifiedLabelsCount = (params?: {
     warehouses?: string[];
 }) => {
     return http.get(dashboardApiRoutes.getVerifiedLabelsCount, {
-        noOfLastDays: params?.noOfLastDays ?? 100,
+        noOfLastDays: params?.noOfLastDays ?? 1,
         warehouses: params?.warehouses?.join(","),
     });
 };
