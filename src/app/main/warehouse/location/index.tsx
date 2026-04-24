@@ -23,6 +23,8 @@ import type { FilterField } from "../../../../components/filterbar/types/types";
 import { useMutation } from "../../../../hooks/useMutatation";
 import getWarehouseLocationColumns from "./utils/getWarehouseLocationColumns";
 import { appRoutes } from "../../../../utils/constants";
+import type { TableRowSelection } from "antd/es/table/interface";
+import QrBulkPermissionModal from "../../../../components/qrBulkModal/qrBulkModal";
 
 const Location = () => {
     const locationFilterSchema = defaultFilterSchema as FilterField<LocationListFilterValues>[]
@@ -36,7 +38,9 @@ const Location = () => {
 
     const [openModal, setOpenModal] = useState(false);
     const [refreshLocations, setRefreshLocations] = useState(0);
-
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+    const [bulkModal, setBulkModal] = useState(false);
+    const [bulkQrCodesLoading, setBulkQrCodeLoading] = useState(false);
     const [filtersValues, setFiltersValues] = useState<LocationListFilterValues>({
         search: searchParams.get('search') ?? '',
         itemStatus: ACTIVE,
@@ -103,12 +107,16 @@ const Location = () => {
         setOpenModal(true);
     };
 
+    const bulkUploadHandler = () => {
+        setBulkModal(true)
+    }
+
     const handleEdit = useCallback((record: LocationRow) => {
         console.log(record);
     }, []);
 
     const handleQR = useCallback(async (record: LocationRow) => {
-        return await downloadPDF(record?.name, record?.name);
+        return await downloadPDF({ codes: [record.code] }, record?.name);
     }, []);
 
     const handleNavigation = useCallback((param: string) => {
@@ -129,19 +137,53 @@ const Location = () => {
 
     const handleFilterChange = useCallback((selected: LocationListFilterValues) => {
         setFiltersValues(selected)
-    }, [])
+    }, []);
+
+    // on selection of row handler
+    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+        console.log(newSelectedRowKeys)
+        setSelectedRowKeys(newSelectedRowKeys);
+    };
+
+    // select row config
+    const rowSelection: TableRowSelection<LocationRow> = {
+        selectedRowKeys,
+        onChange: onSelectChange,
+        preserveSelectedRowKeys: true
+    };
+
+    const bulkQrCodeGenerationHandler = async (value: number) => {
+        if (value == 1) {
+            setBulkQrCodeLoading(true)
+            await downloadPDF({ codes: [], isAllLocation: true }, "locationQrCodes");
+            setBulkModal(false);
+            setBulkQrCodeLoading(false)
+            return
+        }
+        else {
+            setBulkQrCodeLoading(true)
+            await downloadPDF({ codes: selectedRowKeys }, "locationQrCodes");
+            setBulkModal(false)
+            setBulkQrCodeLoading(false)
+            return
+        }
+    }
 
     return (
         <Row className="gap-5 w-full">
             <Col span={24} className="intro-row">
-                <Row justify="space-between">
+                <Row justify="space-between" className="flex-wrap!">
                     <div className="flex items-center gap-4">
                         <AppTitle level={3} className="primary-color">
                             Locations
                         </AppTitle>
                     </div>
 
-                    <AppButton onClick={actionHandler}>Create Location</AppButton>
+                    <div className="flex gap-3 items-center flex-wrap">
+                        <AppButton onClick={actionHandler}>Create Location</AppButton>
+                        <AppButton onClick={bulkUploadHandler}>Bulk Qr Code Generation</AppButton>
+                    </div>
+
                 </Row>
             </Col>
 
@@ -154,6 +196,7 @@ const Location = () => {
 
             <Col span={24}>
                 <AppTable<LocationRow>
+                    rowKey="code"
                     columns={locationColumns}
                     dataSource={data?.data?.locations}
                     loading={loading}
@@ -162,6 +205,7 @@ const Location = () => {
                     pageSize={pagination.pageSize}
                     onPageChange={handlePageChange}
                     scroll={{ x: "max-content" }}
+                    rowSelection={rowSelection}
                 />
             </Col>
 
@@ -169,6 +213,14 @@ const Location = () => {
                 open={openModal}
                 setOpen={setOpenModal}
                 setRefreshLocations={setRefreshLocations}
+            />
+
+            <QrBulkPermissionModal
+                open={bulkModal}
+                setOpen={setBulkModal}
+                qrCodeGeneratorHandler={bulkQrCodeGenerationHandler}
+                bulkQrCodesLoading={bulkQrCodesLoading}
+                selectedRowsOptionEnable={selectedRowKeys.length == 0 ? false : true}
             />
         </Row>
     );

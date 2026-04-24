@@ -1,8 +1,8 @@
 import type { ColumnsType } from "antd/es/table"
 import type { LabelVerificationRow } from "../../../../../types/main/warehouse"
-import TagCell from "../../../../../components/tagCell"
+import CustomTag from "../../../../../components/customTag"
 import dayjs from "dayjs"
-import EllipsisCell from "../../../../../components/ellipsisCell/ellipsisCell"
+import TextEllipsis from "../../../../../components/textEllipsis"
 
 const getLabelVerificationColumns = (): ColumnsType<LabelVerificationRow> => [
     {
@@ -13,14 +13,21 @@ const getLabelVerificationColumns = (): ColumnsType<LabelVerificationRow> => [
             const { suggestedActualSkus, passed } = record || {}
             const bgColor = passed ? 'bg-green-100' : 'bg-red-200'
             return (
-                <div className={`flex flex-col p-3 rounded-sm justify-center ${bgColor} gap-2`}>
+                <div
+                    className={`
+                        w-60 sm:w-[16vw]
+                        flex flex-col p-3 rounded-sm justify-center 
+                        ${bgColor} gap-2
+                    `}
+                >
                     <div className="flex flex-col">
                         <p className="font-medium">Label</p>
-                        <EllipsisCell width={98} text={value} />
+                        <TextEllipsis text={value} />
                     </div>
-                    <div className="flex flex-col ">
+
+                    <div className="flex flex-col">
                         <p className="font-medium">SKUs</p>
-                        <EllipsisCell width={98} text={suggestedActualSkus} />
+                        <TextEllipsis text={suggestedActualSkus} />
                     </div>
                 </div>
             )
@@ -35,14 +42,21 @@ const getLabelVerificationColumns = (): ColumnsType<LabelVerificationRow> => [
             const { scannedModelNumber, scannedModelNumberSku, passed } = record || {}
             const bgColor = passed ? 'bg-green-100' : 'bg-red-200'
             return (
-                <div className={`flex flex-col p-3 rounded-sm justify-center ${bgColor} gap-2`}>
+                <div
+                    className={`
+                        w-60 sm:w-[16vw]
+                        flex flex-col p-3 rounded-sm justify-center 
+                        ${bgColor} gap-2
+                    `}
+                >
+
                     <div className="flex flex-col ">
                         <p className="font-medium">Model No.</p>
-                        <EllipsisCell width={98} text={scannedModelNumber} />
+                        <TextEllipsis text={scannedModelNumber} />
                     </div>
                     <div className="flex flex-col ">
                         <p className="font-medium">Model SKU</p>
-                        <EllipsisCell width={98} text={scannedModelNumberSku} />
+                        <TextEllipsis text={scannedModelNumberSku} />
                     </div>
                 </div>
             )
@@ -56,14 +70,20 @@ const getLabelVerificationColumns = (): ColumnsType<LabelVerificationRow> => [
             const { suggestedModelNumber, passed } = record || {}
             const bgColor = passed ? 'bg-green-100' : 'bg-red-200'
             return (
-                <div className={`flex flex-col p-3 rounded-sm justify-center w-full h-full ${bgColor} gap-2`}>
+                <div className={`
+                        w-60 sm:w-[16vw]
+                        flex flex-col p-3 rounded-sm justify-center 
+                        ${bgColor} gap-2
+                    `}
+                >
+
                     <div className="flex flex-col ">
                         <p className="font-medium">Suggested SKUs</p>
-                        <EllipsisCell width={98} text={value} />
+                        <TextEllipsis text={value} />
                     </div>
                     <div className="flex flex-col ">
                         <p className="font-medium">Suggested Model No</p>
-                        <EllipsisCell width={98} text={suggestedModelNumber} />
+                        <TextEllipsis text={suggestedModelNumber} />
                     </div>
                 </div>
             )
@@ -87,7 +107,7 @@ const getLabelVerificationColumns = (): ColumnsType<LabelVerificationRow> => [
         dataIndex: "warehouse",
         key: "warehouse",
         render: (value: string) => (
-            <TagCell value={value} color="blue" />
+            <CustomTag value={value} color="blue" />
         ),
     },
     {
@@ -95,7 +115,7 @@ const getLabelVerificationColumns = (): ColumnsType<LabelVerificationRow> => [
         dataIndex: "carrier",
         key: "carrier",
         render: (value: string) => (
-            <TagCell value={value} color="blue" />
+            <CustomTag value={value} color="blue" />
         ),
     },
     {

@@ -1,8 +1,8 @@
 import type { ColumnsType } from "antd/es/table"
 import type { LocationRow } from "../../../../../types/main/location"
-import TagCell from "../../../../../components/tagCell"
+import CustomTag from "../../../../../components/customTag"
 import StatusContent from "../components/statusContent"
-import MultiValueCell from "../../../../../components/multiValueCell/multiValueCell"
+import MultiValueCell from "../../../../../components/multiValueCell"
 import AppButton from "../../../../../components/button"
 import { BsQrCode } from "react-icons/bs"
 import { EditOutlined } from "@ant-design/icons";
@@ -22,8 +22,11 @@ const getWarehouseLocationColumns = (
             dataIndex: "code",
             key: "code",
             render: (value: string) => (
-                <span className="cursor-pointer" onClick={() => handleNavigation(value)}>
-                    <TagCell value={value} color="blue" />
+                <span
+                    className="cursor-pointer"
+                    onClick={() => handleNavigation(value)}
+                >
+                    <CustomTag value={value} color="blue" />
                 </span>
             ),
         },

@@ -1,15 +1,15 @@
 import { Popover } from "antd";
+import React from "react";
 
-interface EllipsisCellProps {
+interface TextEllipsisProps {
     text: string;
-    width?: number;
 }
 
-const EllipsisCell = ({ text = "", width = 95 }: EllipsisCellProps) => {
+const TextEllipsis = ({ text = "" }: TextEllipsisProps) => {
     if (!text) return "-";
     const isLong = text.length > 20;
     return (
-        <div style={{ width: `${width}%` }}>
+        <React.Fragment>
             {isLong ? (
                 <Popover
                     content={
@@ -28,8 +28,8 @@ const EllipsisCell = ({ text = "", width = 95 }: EllipsisCellProps) => {
             ) : (
                 <div>{text}</div>
             )}
-        </div>
+        </React.Fragment>
     );
 };
 
-export default EllipsisCell;
+export default TextEllipsis;

@@ -2,15 +2,16 @@ import { Spin } from 'antd'
 import { ImSpinner2 } from 'react-icons/im'
 
 interface LoaderProps {
-    size?: string
+    size?: "small" | "default" | "large" | undefined
 }
 
-const Loader = ({ size }: LoaderProps) => {
+const Loader = ({ size = "default" }: LoaderProps) => {
     return (
         <Spin
             indicator={
-                <ImSpinner2 size={size} className={`${size ? "" : "text-4xl!"} spinner-color animate-spin`} />
+                <ImSpinner2 className={`${size ? "" : "text-4xl!"} spinner-color animate-spin`} />
             }
+            size={size ? size : "default"}
         />
     )
 }

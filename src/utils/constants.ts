@@ -41,6 +41,11 @@ const AUTH_CHANNEL = "auth_channel";
 const authChannel = new BroadcastChannel(AUTH_CHANNEL);
 
 const apiRoutes = {
+  // DASHBOARD
+  GET_SKUS_COUNT: "/dashboard/total-skus",
+  GET_LOW_STOCKS_COUNT: "/dashboard/low-stock",
+  GET_VERIFIED_LABELS_COUNT: "/dashboard/label-verification-stats",
+  GET_RECENT_ORDERS: "/dashboard/recent-orders",
   // WAREHOUSES
   GET_WAREHOUSES: "/warehouse/paginated",
   CREATE_WAREHOUSE: "/warehouse",
@@ -89,7 +94,7 @@ const apiRoutes = {
   CREATE_IMPORT_LOCATIONS: "/bulk-upload/location",
   CREATE_IMPORT_ITEMS: "/bulk-upload/item",
   // GENERAL
-  GET_QR_CODE: "/qr-bar-code-generator/qr",
+  GET_QR_CODE: "/qr-bar-code-generator/download",
   UPLOAD_IMAGE: "/images/upload",
 };
 

@@ -1,0 +1,31 @@
+.dashboard-card {
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    border-radius: 10px;
+}
+
+.dashboard-card {
+    transition: transform 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    border-radius: 10px;
+}
+
+.dashboard-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background-color: var(--color-text-headings);
+    transition: width 0.35s ease;
+}
+
+.dashboard-card:hover {
+    transform: scale(1.03);
+}
+
+.dashboard-card:hover::after {
+    width: 100%;
+}

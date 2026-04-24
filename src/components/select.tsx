@@ -147,7 +147,7 @@ function AppSelect<
                     {menu}
                     {loading && (
                         <div className="flex items-center justify-center gap-2 py-2">
-                            <Loader size="10" />
+                            <Loader />
                             <span className="text-gray-400 text-sm">Loading...</span>
                         </div>
                     )}

@@ -1,9 +1,9 @@
 import type { ColumnsType } from "antd/es/table";
 import AppImage from "../../../../components/image";
-import TagCell from "../../../../components/tagCell";
+import CustomTag from "../../../../components/customTag";
 import type { InventoryRow } from "../../../../types/main/inventory";
 import StatusContent from "../../warehouse/location/components/statusContent";
-import EllipsisCell from "../../../../components/ellipsisCell/ellipsisCell";
+import TextEllipsis from "../../../../components/textEllipsis";
 
 export const getInventoryColumns = (
     handleNavigation: (value: string) => void
@@ -26,7 +26,7 @@ export const getInventoryColumns = (
             key: "code",
             render: (value: string) => (
                 <span className="cursor-pointer" onClick={() => handleNavigation(value)}>
-                    <TagCell value={value} color="blue" />
+                    <CustomTag value={value} color="blue" />
                 </span>
             ),
         },
@@ -34,13 +34,13 @@ export const getInventoryColumns = (
             title: "Name",
             dataIndex: "name",
             key: "name",
-            render: (value: string) => <EllipsisCell text={value} />,
+            render: (value: string) => <div className="w-60 sm:w-[16wv]"><TextEllipsis text={value} /></div>,
         },
         {
             title: "Description",
             dataIndex: "description",
             key: "description",
-            render: (value: string) => <EllipsisCell text={value} />,
+            render: (value: string) => <div className="w-60 sm:w-[16wv]"><TextEllipsis text={value} /></div>,
         },
         {
             title: "Item Status",

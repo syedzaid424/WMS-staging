@@ -17,10 +17,12 @@ import { useAuthStore } from "../../../../store/auth/authStore"
 import { downloadPDF } from "../../../../utils/handlers"
 import { useMutation } from "../../../../hooks/useMutatation"
 import { useQueryFilters } from "../../../../hooks/useQueryFilter"
+import type { TableRowSelection } from "antd/es/table/interface"
+import QrBulkPermissionModal from "../../../../components/qrBulkModal/qrBulkModal"
 
 const defaultFilters = {
     page: 1,
-    pageSize: 50,
+    pageSize: 10,
     search: ""
 }
 
@@ -39,6 +41,9 @@ const Pallets = () => {
     });
     const [refreshPallets, setRefreshLocations] = useState(0);
     const [refreshPallet, setRefreshPallet] = useState(0);
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+    const [bulkModal, setBulkModal] = useState(false);
+    const [bulkQrCodesLoading, setBulkQrCodeLoading] = useState(false);
     const { user } = useAuthStore();
 
     // creation of pallet
@@ -73,9 +78,8 @@ const Pallets = () => {
     }
 
     // to generate QR code.
-    const handleQR = async (record: any) => {
-        let res = await downloadPDF(record, record);
-        return res
+    const handleQR = async (code: any) => {
+        return await downloadPDF({ codes: [code] }, code);
     }
 
     const columns = usePalletColumns({ handlePalletDetails, handleQR });
@@ -111,20 +115,55 @@ const Pallets = () => {
         })
     };
 
+    // on selection of row handler
+    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+        setSelectedRowKeys(newSelectedRowKeys);
+    };
+
+    const bulkUploadHandler = () => {
+        setBulkModal(true)
+    }
+
+    // select row config
+    const rowSelection: TableRowSelection<PalletRow> = {
+        selectedRowKeys,
+        onChange: onSelectChange,
+        preserveSelectedRowKeys: true
+    };
+
+    const bulkQrCodeGenerationHandler = async (value: number) => {
+        if (value == 1) {
+            setBulkQrCodeLoading(true)
+            await downloadPDF({ codes: [], isAllPallet: true }, "palletQrCodes");
+            setBulkModal(false);
+            setBulkQrCodeLoading(false)
+            return
+        }
+        else {
+            setBulkQrCodeLoading(true)
+            await downloadPDF({ codes: selectedRowKeys }, "palletQrCodes");
+            setBulkModal(false)
+            setBulkQrCodeLoading(false)
+            return
+        }
+    }
+
 
     return (
         <Row className="gap-5 w-full">
             <Col span={24} className="intro-row">
-                <Row justify="space-between">
+                <Row justify="space-between" className="flex-wrap!">
                     <div className="flex items-center gap-4">
                         <AppTitle level={3} className="primary-color">
                             Pallets
                         </AppTitle>
                     </div>
-
-                    <AppButton onClick={actionHandler}>
-                        Create Pallet
-                    </AppButton>
+                    <div className="flex gap-3 items-center flex-wrap">
+                        <AppButton onClick={actionHandler}>
+                            Create Pallet
+                        </AppButton>
+                        <AppButton onClick={bulkUploadHandler}>Bulk Qr Code Generation</AppButton>
+                    </div>
                 </Row>
             </Col>
 
@@ -135,12 +174,13 @@ const Pallets = () => {
                     defaultSearchValue={filters?.search}
                     placeholder="Search by Pallet Code, Box Code, Model, Location, Container Number"
                     className="h-11"
-                    suffix={loading && <Loader size="10" />}
+                    suffix={loading && <Loader />}
                 />
             </Col>
 
             <Col span={24}>
                 <AppTable<PalletRow>
+                    rowKey="palletCode"
                     columns={columns}
                     dataSource={data?.data?.pallets}
                     loading={loading}
@@ -149,6 +189,7 @@ const Pallets = () => {
                     pageSize={filters.pageSize}
                     onPageChange={handlePageChange}
                     scroll={{ x: "max-content" }}
+                    rowSelection={rowSelection}
                 />
             </Col>
 
@@ -167,6 +208,14 @@ const Pallets = () => {
                 deletePalletItemsHandler={deletePalletItemsHandler}
                 palletClearLoading={palletClearLoading}
                 refreshPallet={refreshPallet}
+            />
+
+            <QrBulkPermissionModal
+                open={bulkModal}
+                setOpen={setBulkModal}
+                qrCodeGeneratorHandler={bulkQrCodeGenerationHandler}
+                bulkQrCodesLoading={bulkQrCodesLoading}
+                selectedRowsOptionEnable={selectedRowKeys.length == 0 ? false : true}
             />
         </Row>
     )

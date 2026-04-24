@@ -94,7 +94,7 @@ const Items = () => {
           prefix={<IoIosSearch size={20} color="gray" />}
           setSearchDebouncedValue={searchHandler}
           className="h-11"
-          suffix={loading && <Loader size="10" />}
+          suffix={loading && <Loader size='default'  />}
         />
       </Col>
 
