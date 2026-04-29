@@ -27,11 +27,11 @@ const MultiValueCell: React.FC<MultiValueCellProps> = ({
         <Popover
             trigger="click"
             content={
-                <div className="flex flex-col gap-2 max-w-[260px]">
+                <div className="flex flex-col gap-2 max-w-65">
                     {values.map((val) => (
                         <div
                             key={val}
-                            className={`break-words text-sm ${navigationPath && 'cursor-pointer'} `}
+                            className={`wrap-break-word text-sm ${navigationPath && 'cursor-pointer'} `}
                             onClick={() => handleNavigation(val)}
                         >
                             {val}
@@ -40,11 +40,11 @@ const MultiValueCell: React.FC<MultiValueCellProps> = ({
                 </div>
             }
         >
-            <div className="flex items-center gap-1 max-w-[220px] overflow-hidden cursor-pointer">
+            <div className="flex items-center gap-1 max-w-55 overflow-hidden cursor-pointer">
                 {visible.map((val) => (
                     <Tag
                         key={val}
-                        className={`max-w-[80px] truncate ${navigationPath && 'cursor-pointer'} `}
+                        className={`max-w-20 truncate ${navigationPath && 'cursor-pointer'} `}
                         onClick={() => handleNavigation(val)}
                     >
                         {val}
@@ -52,7 +52,7 @@ const MultiValueCell: React.FC<MultiValueCellProps> = ({
                 ))}
 
                 {remaining > 0 && (
-                    <Tag className="flex-shrink-0 cursor-pointer">+{remaining}</Tag>
+                    <Tag className="shrink-0 cursor-pointer">+{remaining}</Tag>
                 )}
             </div>
         </Popover>

@@ -14,7 +14,7 @@ import { warehouseApiRoutes } from "../utils/apiRoutes"
 
 const defaultFilters = {
     page: 1,
-    pageSize: 50,
+    pageSize: 10,
     search: ""
 }
 
@@ -85,7 +85,7 @@ const Container = () => {
                     defaultSearchValue={filters?.search}
                     placeholder="Search by Container Number"
                     className="h-11"
-                    suffix={loading && <Loader size="10" />}
+                    suffix={loading && <Loader />}
                 />
             </Col>
 

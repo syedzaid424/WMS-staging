@@ -12,6 +12,7 @@ const appRoutes = {
   WAREHOUSE_PALLET: "/warehouse/pallets",
   WAREHOUSE_CONTAINER: "/warehouse/containers",
   WAREHOUSE_CONTAINER_DETAIL: "/warehouse/containers",
+  WAREHOUSE_LABEL_VERIFICATION: "/warehouse/label-verification",
   IMPORT_EXPORT: "/import-export",
   IMPORT_EXPORT_LOCATIONS: "/import-export/locations",
   IMPORT_EXPORT_ITEMS: "/import-export/items",
@@ -40,6 +41,13 @@ const AUTH_CHANNEL = "auth_channel";
 const authChannel = new BroadcastChannel(AUTH_CHANNEL);
 
 const apiRoutes = {
+  //AUTH
+  LOGIN: "/auth/authenticate",
+  // DASHBOARD
+  GET_SKUS_COUNT: "/dashboard/total-skus",
+  GET_LOW_STOCKS_COUNT: "/dashboard/low-stock",
+  GET_VERIFIED_LABELS_COUNT: "/dashboard/label-verification-stats",
+  GET_RECENT_ORDERS: "/dashboard/recent-orders",
   // WAREHOUSES
   GET_WAREHOUSES: "/warehouse/paginated",
   CREATE_WAREHOUSE: "/warehouse",
@@ -48,6 +56,7 @@ const apiRoutes = {
   CREATE_LOCATION: "/location",
   GET_LOCATION_TYPES: "/location-type",
   CREATE_LOCATION_TYPE: "/location-type",
+  CLEAR_LOCATIONS: "/location/clear-location",
   // PALLETS
   GET_PALLETS: "/pallet",
   CREATE_PALLET: "/pallet",
@@ -56,6 +65,11 @@ const apiRoutes = {
   // CONTAINERS
   GET_CONTAINERS: "/container/all",
   GET_CONTAINER: "/container",
+  // LABELS VERFICATION
+  GET_LABELS: "/shipment-label-verification",
+  GET_SHIPMENT_CARRIERS: "/shipment-label-verification/carriers",
+  GET_SHIPMENT_WAREHOUSES: "/shipment-label-verification/warehouse",
+  GET_SHIPMENT_SCANNEDBY_USERS: "/shipment-label-verification/scanned-by",
   // USER UPDATES
   UPDATE_USER_WAREHOUSE: "/user/warehouse",
   GET_ROLES: "/role",
@@ -82,11 +96,12 @@ const apiRoutes = {
   CREATE_IMPORT_LOCATIONS: "/bulk-upload/location",
   CREATE_IMPORT_ITEMS: "/bulk-upload/item",
   // GENERAL
-  GET_QR_CODE: "/qr-bar-code-generator/qr",
+  GET_QR_CODE: "/qr-bar-code-generator/download",
   UPLOAD_IMAGE: "/images/upload",
 };
 
 const palletSpecificLocationType = "STAGING";
+const warehouseDefaultPagination = 50;
 
 export {
   appRoutes,
@@ -94,4 +109,5 @@ export {
   routePrefix,
   apiRoutes,
   palletSpecificLocationType,
+  warehouseDefaultPagination
 };

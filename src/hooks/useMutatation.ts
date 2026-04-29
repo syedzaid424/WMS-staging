@@ -131,9 +131,14 @@ export function useMutation<
                 setSuccess(false);
 
                 if (showErrorMessage) {
-                    message.error(err?.message || "Something went wrong");
+                    // first priority if data message exists then show it else err.message.
+                    if (err?.response?.data?.data && Object.keys(err?.response?.data?.data)?.length > 0) {
+                        message.error(JSON.stringify(err?.response?.data?.data) || "Something went wrong");
+                    }
+                    else {
+                        message.error(err?.message || "Something went wrong");
+                    }
                 }
-
                 throw err;
             } finally {
                 setLoading(false);

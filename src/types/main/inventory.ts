@@ -30,3 +30,10 @@ export interface InventoryResponse {
   totalPages: number;
   inventories: Inventory[];
 }
+
+export interface InventoryListFilterValues {
+  search: string;
+  itemStatus: "ACTIVE" | "INACTIVE";
+  inventoryStatus: "ACTIVE" | "INACTIVE";
+  boxRange: null | [number, number];
+}

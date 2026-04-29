@@ -1,8 +1,8 @@
 import {
   ACTIVE,
   statusOptions,
-} from "../../app/main/warehouse/location/constants/constants";
-import type { FilterField } from "./types";
+} from "../../../app/main/warehouse/location/constants/constants";
+import type { FilterField } from "../types/types";
 
 export const defaultFilterSchema = [
   {
@@ -62,9 +62,13 @@ export const defaultFilterSchema = [
       lg: 5,
     },
     placeholder: "Minimum Boxes",
-    value: [0, 0],
+    value: null,
+    limits: [
+      { name: "min", min: 0, max: 999999 },
+      { name: "max", min: 0, max: 999999 },
+    ],
     type: "range",
     default: null,
     label: "Total Box Range",
   },
-] satisfies FilterField[];
+] satisfies FilterField<Record<string, unknown>>[];

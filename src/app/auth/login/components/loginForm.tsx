@@ -1,110 +1,74 @@
 
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Input } from "antd";
 import { loginSchema } from "../schemas";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router";
-import { login } from "../utils/apiRoutes";
 import { useAuthStore } from "../../../../store/auth/authStore";
-import AppButton from "../../../../components/button";
-import AppText from "../../../../components/text";
 import type { LoginFormValues } from "../../../../types/auth/login";
+import DynamicForm, { type FieldType } from "../../../../components/dynamicForm";
+import { useMutation } from "../../../../hooks/useMutatation";
+import type { ApiResponse } from "../../../../utils/types";
+import { apiRoutes } from "../../../../utils/constants";
 
 
 const LoginForm = () => {
 
-    const {
-        control,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-    } = useForm<LoginFormValues>({
-        resolver: yupResolver(loginSchema),
-    });
 
     const { setLogin } = useAuthStore();
-    const [isEmailFocus, setIsEmailFocus] = useState(true);
 
-    // setting is Email foucs initially.
-    useEffect(() => {
-        setIsEmailFocus(false);
-    }, [])
+    // creating user.
+    const { mutate, loading } = useMutation<ApiResponse<any>>({
+        endpoint: apiRoutes.LOGIN,
+        method: "post",
+        showSuccessMessage: true,
+    });
 
-    const onSubmit = async (data: LoginFormValues) => {
+    const handleMutation = async (data: LoginFormValues) => {
         try {
-            let res: any = await login(data);
-            if (res) {
+            const res: any = await mutate(data);
+            if (res?.access_token) {
                 setLogin(res, res.access_token, res?.refreshToken);
+                return true;
             }
-        } catch (error) {
-            console.log(error)
+            return false;
+        } catch (err) {
+            return false;
         }
     };
+    const loginFields = useMemo(() => [
+        {
+            name: "email",
+            label: "Email*",
+            type: "email" as FieldType,
+            placeholder: "Enter your email",
+            span: 24,
+        },
+        {
+            name: "password",
+            label: "Password*",
+            type: "password" as FieldType,
+            placeholder: "Enter your password",
+            span: 24,
+        },
+    ], [])
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6! w-full md:w-3/6 mx-auto">
-            {/* Email */}
-            <div className="w-full mx-auto flex flex-col gap-1">
-                <AppText className="block mb-1 font-medium tracking-wide label-color">Email*</AppText>
-                <Controller
-                    name="email"
-                    control={control}
-                    render={({ field }) => (
-                        <Input
-                            {...field}
-                            size="large"
-                            placeholder="Enter your username"
-                            status={errors.email ? "error" : ""}
-                            autoFocus={isEmailFocus}
-                        />
-                    )}
-                />
-                {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">
-                        {errors.email.message}
-                    </p>
-                )}
-            </div>
-
-            {/* Password */}
-            <div className="w-full mx-auto flex flex-col gap-1">
-                <AppText className="block mb-1 font-medium tracking-wide label-color">Password*</AppText>
-                <Controller
-                    name="password"
-                    control={control}
-                    render={({ field }) => (
-                        <Input.Password
-                            {...field}
-                            size="large"
-                            placeholder="Enter your password"
-                            status={errors.password ? "error" : ""}
-                        />
-                    )}
-                />
-                {errors.password && (
-                    <p className="text-red-500 text-sm mt-1">
-                        {errors.password.message}
-                    </p>
-                )}
-            </div>
-
-            {/* Submit Button */}
-            <AppButton
-                htmlType="submit"
-                size="large"
-                loading={isSubmitting}
-                fullWidth={true}
-                className={`${isSubmitting && "pointer-events-none"}`}
-            >
-                Log in to my account
-            </AppButton>
-
+        <div className="space-y-6! w-full md:w-3/6 mx-auto">
+            <DynamicForm
+                type={"create"}
+                submitText={"Log in to my account"}
+                loading={loading}
+                fields={loginFields}
+                validationSchema={loginSchema}
+                onSubmit={handleMutation}
+                btnClassName={'w-full mt-2!'}
+                btnSize="large"
+            />
             <div className="flex justify-end">
-                <Link to={'/forget-password'} className={`${isSubmitting && "pointer-events-none"}`}>
+                <Link to={'/forget-password'} className={`${loading && "pointer-events-none"}`}>
                     Forgotten Password?
                 </Link>
             </div>
-        </form>
+        </div>
     )
 }
 

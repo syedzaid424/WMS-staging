@@ -2,11 +2,10 @@ import { Col, Row } from "antd";
 import { useCallback, useMemo, useState } from "react";
 import type { ColumnsType } from "antd/es/table";
 import LocationMutatingModal from "./components/locationMutationModal";
-import { EditOutlined } from "@ant-design/icons";
-import { BsQrCode } from "react-icons/bs";
 import { useAuthStore } from "../../../../store/auth/authStore";
 import type { ApiResponse } from "../../../../utils/types";
 import type {
+    LocationListFilterValues,
     LocationResponse,
     LocationRow,
 } from "../../../../types/main/location";
@@ -16,15 +15,19 @@ import AppButton from "../../../../components/button";
 import AppTitle from "../../../../components/title";
 import AppTable from "../../../../components/table";
 import { warehouseApiRoutes } from "../utils/apiRoutes";
-import { ACTIVE, inventoryDestinationUrl } from "./constants/constants";
+import { ACTIVE } from "./constants/constants";
 import Filterbar from "../../../../components/filterbar/filterbar";
-import { defaultFilterSchema } from "../../../../components/filterbar/data";
-import MultiValueCell from "../../../../components/multiValueCell/multiValueCell";
+import { defaultFilterSchema } from "../../../../components/filterbar/util/data";
 import { useNavigate, useSearchParams } from "react-router";
-import StatusContent from "./components/statusContent";
-import TagCell from "../../../../components/tagCell";
+import type { FilterField } from "../../../../components/filterbar/types/types";
+import { useMutation } from "../../../../hooks/useMutatation";
+import getWarehouseLocationColumns from "./utils/getWarehouseLocationColumns";
+import { appRoutes } from "../../../../utils/constants";
+import type { TableRowSelection } from "antd/es/table/interface";
+import QrBulkPermissionModal from "../../../../components/qrBulkModal/qrBulkModal";
 
 const Location = () => {
+    const locationFilterSchema = defaultFilterSchema as FilterField<LocationListFilterValues>[]
     const [searchParams] = useSearchParams()
     const navigate = useNavigate()
     const [pagination, setPagination] = useState({
@@ -35,8 +38,10 @@ const Location = () => {
 
     const [openModal, setOpenModal] = useState(false);
     const [refreshLocations, setRefreshLocations] = useState(0);
-
-    const [filtersValues, setFiltersValues] = useState({
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+    const [bulkModal, setBulkModal] = useState(false);
+    const [bulkQrCodesLoading, setBulkQrCodeLoading] = useState(false);
+    const [filtersValues, setFiltersValues] = useState<LocationListFilterValues>({
         search: searchParams.get('search') ?? '',
         itemStatus: ACTIVE,
         inventoryStatus: ACTIVE,
@@ -80,6 +85,14 @@ const Location = () => {
         refreshTrigger: [refreshLocations, user?.warehouseId],
         showSuccessMessage: false,
     });
+
+    // clear locations.
+    const { loading: clearLocationsLoading, mutate } = useMutation<ApiResponse<any>>({
+        endpoint: warehouseApiRoutes.clearLocation,
+        method: "post",
+        showSuccessMessage: true
+    });
+
     const total = data?.data?.totalElements || 0;
 
     const handlePageChange = (page: number, pageSize: number) => {
@@ -94,150 +107,96 @@ const Location = () => {
         setOpenModal(true);
     };
 
-    const handleEdit = useCallback((record: any) => {
+    const bulkUploadHandler = () => {
+        setBulkModal(true)
+    }
+
+    const handleEdit = useCallback((record: LocationRow) => {
         console.log(record);
     }, []);
 
-    const handleQR = useCallback(async (record: any) => {
-        return await downloadPDF(record?.name, record?.name);
+    const handleQR = useCallback(async (record: LocationRow) => {
+        return await downloadPDF({ codes: [record.code] }, record?.name);
     }, []);
 
     const handleNavigation = useCallback((param: string) => {
-        navigate(`/${inventoryDestinationUrl}?search=${param}`)
+        navigate(`${appRoutes.INVENTORY}?search=${param}`)
     }, [navigate]);
 
+    const handleClearLocation = useCallback(async (locationCode: string) => {
+        let res = await mutate({ params: { code: locationCode } });
+        if (res?.status == '200') {
+            setRefreshLocations(prev => prev + 1)
+        }
+    }, [refreshLocations])
+
     const locationColumns: ColumnsType<LocationRow> = useMemo(
-        () => [
-            {
-                title: "Location Code",
-                dataIndex: "code",
-                key: "code",
-                render: (value: string) => (
-                    <span className="cursor-pointer" onClick={() => handleNavigation(value)}>
-                        <TagCell value={value} color="blue" />
-                    </span>
-                ),
-            },
-            {
-                title: "Name",
-                dataIndex: "name",
-                key: "name",
-            },
-            {
-                title: "Description",
-                dataIndex: "description",
-                key: "description",
-                render: (val) => val || "-",
-            },
-            {
-                title: "Location Type",
-                dataIndex: "locationType",
-                key: "locationType",
-            },
-            {
-                title: "Parent Location Name",
-                dataIndex: "parentLocationName",
-                key: "parentLocationName",
-                render: (val) => val || "-",
-            },
-            {
-                title: "Warehouse Name",
-                dataIndex: "warehouseName",
-                key: "warehouseName",
-            },
-            {
-                title: "Item Status",
-                dataIndex: "itemStatus",
-                key: "itemStatus",
-                render: (value: string) => (
-                    <StatusContent status={value} />
-                ),
-            },
-            {
-                title: "Inventory Status",
-                dataIndex: "inventoryStatus",
-                key: "inventoryStatus",
-                render: (value: string) => (
-                    <StatusContent status={value} />
-                ),
-            },
-            {
-                title: "Total Boxes",
-                dataIndex: "totalBoxes",
-                key: "totalBoxes",
-            },
-            {
-                title: "Total Units",
-                dataIndex: "totalUnits",
-                key: "totalUnits",
-            },
-            {
-                title: "Model Number",
-                dataIndex: "itemCode",
-                key: "itemCode",
-                render: (values: string) => (
-                    <MultiValueCell values={values?.split(',')} navigationPath={inventoryDestinationUrl} maxVisible={1} />
-                ),
-            },
-            {
-                title: "Item SKU",
-                dataIndex: "itemSku",
-                key: "itemSku",
-                render: (values: string) => (
-                    <MultiValueCell values={values?.split(',')} maxVisible={1} />
-                ),
-            },
-            {
-                title: "Action",
-                key: "action",
-                width: 80,
-                render: (_, record) => (
-                    <div className="flex items-center gap-3">
-                        <AppButton
-                            icon={<EditOutlined />}
-                            title="Edit Details"
-                            onClick={() => handleEdit(record)}
-                        />
-                        <AppButton
-                            title="Generate QR Code"
-                            className="bg-[#5A6268]!"
-                            icon={<BsQrCode />}
-                            onClick={() => handleQR(record)}
-                        />
-                    </div>
-                ),
-            },
-        ],
-        [handleNavigation, handleEdit, handleQR],
+        () => getWarehouseLocationColumns(handleNavigation, handleEdit, handleQR, handleClearLocation, clearLocationsLoading),
+        [handleNavigation, handleEdit, handleQR, clearLocationsLoading],
     );
 
-    const handleFilterChange = useCallback((selected: any) => {
+    const handleFilterChange = useCallback((selected: LocationListFilterValues) => {
         setFiltersValues(selected)
-    }, [])
+    }, []);
+
+    // on selection of row handler
+    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+        console.log(newSelectedRowKeys)
+        setSelectedRowKeys(newSelectedRowKeys);
+    };
+
+    // select row config
+    const rowSelection: TableRowSelection<LocationRow> = {
+        selectedRowKeys,
+        onChange: onSelectChange,
+        preserveSelectedRowKeys: true
+    };
+
+    const bulkQrCodeGenerationHandler = async (value: number) => {
+        if (value == 1) {
+            setBulkQrCodeLoading(true)
+            await downloadPDF({ codes: [], isAllLocation: true }, "locationQrCodes");
+            setBulkModal(false);
+            setBulkQrCodeLoading(false)
+            return
+        }
+        else {
+            setBulkQrCodeLoading(true)
+            await downloadPDF({ codes: selectedRowKeys }, "locationQrCodes");
+            setBulkModal(false)
+            setBulkQrCodeLoading(false)
+            return
+        }
+    }
 
     return (
         <Row className="gap-5 w-full">
             <Col span={24} className="intro-row">
-                <Row justify="space-between">
+                <Row justify="space-between" className="flex-wrap!">
                     <div className="flex items-center gap-4">
                         <AppTitle level={3} className="primary-color">
                             Locations
                         </AppTitle>
                     </div>
 
-                    <AppButton onClick={actionHandler}>Create Location</AppButton>
+                    <div className="flex gap-3 items-center flex-wrap">
+                        <AppButton onClick={actionHandler}>Create Location</AppButton>
+                        <AppButton onClick={bulkUploadHandler}>Bulk Qr Code Generation</AppButton>
+                    </div>
+
                 </Row>
             </Col>
 
             <Col span={24}>
-                <Filterbar
-                    schema={defaultFilterSchema}
+                <Filterbar<LocationListFilterValues>
+                    schema={locationFilterSchema}
                     onChange={handleFilterChange}
                 />
             </Col>
 
             <Col span={24}>
                 <AppTable<LocationRow>
+                    rowKey="code"
                     columns={locationColumns}
                     dataSource={data?.data?.locations}
                     loading={loading}
@@ -246,6 +205,7 @@ const Location = () => {
                     pageSize={pagination.pageSize}
                     onPageChange={handlePageChange}
                     scroll={{ x: "max-content" }}
+                    rowSelection={rowSelection}
                 />
             </Col>
 
@@ -253,6 +213,14 @@ const Location = () => {
                 open={openModal}
                 setOpen={setOpenModal}
                 setRefreshLocations={setRefreshLocations}
+            />
+
+            <QrBulkPermissionModal
+                open={bulkModal}
+                setOpen={setBulkModal}
+                qrCodeGeneratorHandler={bulkQrCodeGenerationHandler}
+                bulkQrCodesLoading={bulkQrCodesLoading}
+                selectedRowsOptionEnable={selectedRowKeys.length == 0 ? false : true}
             />
         </Row>
     );

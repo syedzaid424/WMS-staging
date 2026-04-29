@@ -19,7 +19,7 @@ const Items = () => {
 
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 50,
+    pageSize: 10,
     total: 0,
   });
   const [searchValue, setSearchValue] = useState("")
@@ -94,7 +94,7 @@ const Items = () => {
           prefix={<IoIosSearch size={20} color="gray" />}
           setSearchDebouncedValue={searchHandler}
           className="h-11"
-          suffix={loading && <Loader size="10" />}
+          suffix={loading && <Loader size='default'  />}
         />
       </Col>
 

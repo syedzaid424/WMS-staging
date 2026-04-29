@@ -9,6 +9,7 @@ import { FaFileExport } from "react-icons/fa6";
 import { MdWarehouse } from "react-icons/md";
 import { MdPallet } from "react-icons/md";
 import { PiShippingContainerFill } from "react-icons/pi";
+import { MdOutlineLabelImportant } from "react-icons/md";
 import { MdInventory } from "react-icons/md";
 
 // purpose of this hook is to render those sidebar items that logged in user have access to.
@@ -42,6 +43,11 @@ const useVisibleSidebarItem = () => {
                     key: appRoutes.WAREHOUSE_CONTAINER,
                     label: "Containers",
                     icon: <PiShippingContainerFill />,
+                },
+                {
+                    key: appRoutes.WAREHOUSE_LABEL_VERIFICATION,
+                    label: "Label Verification",
+                    icon: <MdOutlineLabelImportant />,
                 },
             ]
         },
