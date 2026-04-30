@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, forwardRef, useImperativeHandle } from "react";
 import {
     Input,
     Radio,
@@ -18,6 +18,7 @@ import type { UploadFile, UploadProps } from "antd";
 import { UploadOutlined, InboxOutlined } from "@ant-design/icons";
 import AppImage from "./image";
 import type { SelectInterface } from "../utils/types";
+import type { SizeType } from "antd/es/config-provider/SizeContext";
 
 /* ================= TYPES ================= */
 
@@ -100,6 +101,12 @@ interface FormField {
     disabled?: boolean
 }
 
+// Add a ref handle type
+export interface DynamicFormHandle {
+    setValue: (name: string, value: any) => void;
+    getValues: () => Record<string, any>;
+}
+
 interface DynamicFormProps {
     fields: FormField[];
     validationSchema?: Record<string, any>;
@@ -107,24 +114,30 @@ interface DynamicFormProps {
     editData?: Record<string, any>;
     loading?: boolean;
     submitText?: string;
+    btnSize?: SizeType;
+    btnClassName?: string;
     onSubmit: (data: any) => Promise<boolean> | boolean;
-    submitBtnDisable?: boolean
+    submitBtnDisable?: boolean;
 }
+
 
 const EMPTY_OPTIONS: DefaultOptionType[] = [];
 
 /* ================= COMPONENT ================= */
 
-const DynamicForm: React.FC<DynamicFormProps> = ({
+const DynamicForm = forwardRef<DynamicFormHandle, DynamicFormProps>(({
     fields,
     validationSchema,
     type = "create",
     editData,
     loading,
     submitText = "Submit",
+    btnSize,
+    btnClassName,
     onSubmit,
-    submitBtnDisable = false
-}) => {
+    submitBtnDisable = false,
+}, ref
+) => {
     /* ---------- validation ---------- */
 
     const schema = useMemo(
@@ -140,23 +153,28 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         return values;
     }, [fields]);
 
-    console.log(fields)
 
     const {
         control,
         handleSubmit,
         reset,
+        setValue, getValues
     } = useForm({
         resolver: yupResolver(schema),
         mode: "onChange",
         defaultValues,
     });
 
+    // Expose to parent
+    useImperativeHandle(ref, () => ({
+        setValue: (name, value) => setValue(name, value, { shouldValidate: true }),
+        getValues,
+    }));
+
     /* ---------- populate edit ---------- */
 
     useEffect(() => {
         if (type === "edit" && editData) {
-            console.log(editData)
             reset(editData);
         }
     }, [type, editData, reset]);
@@ -164,11 +182,15 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     /* ---------- submit ---------- */
 
     const submitHandler = async (formData: any) => {
-        const resp = await onSubmit(formData);
-        if (resp && type === "create") {
-            reset(defaultValues);
+        try {
+            const resp = await onSubmit(formData);
+            if (resp && type === "create") {
+                reset(defaultValues);
+            }
+            return resp;
+        } catch (err) {
+            return false;
         }
-        return resp;
     };
 
     /* ================= FIELD RENDERER ================= */
@@ -247,6 +269,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
                             /* ---------- SELECT ---------- */
                             case "select":
+                                console.log(rhfField.value)
                                 return (
                                     <Form.Item
                                         label={field.label}
@@ -472,6 +495,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                 <div className="mt-4 flex justify-end">
                     <AppButton
                         htmlType="submit"
+                        className={`${btnClassName ? btnClassName : ""}`}
+                        size={`${btnSize ? btnSize : "medium"}`}
                         loading={loading}
                         disabled={submitBtnDisable}
                     >
@@ -481,6 +506,6 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             </form>
         </Form>
     );
-};
+});
 
 export default DynamicForm;

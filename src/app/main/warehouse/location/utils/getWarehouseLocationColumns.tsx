@@ -15,7 +15,9 @@ const getWarehouseLocationColumns = (
     handleEdit: (record: LocationRow) => void,
     handleQR: (record: LocationRow) => void,
     handleClearLocation: (locationId: string) => void,
-    clearLocationsLoading: boolean
+    clearLocationsLoading: boolean,
+    totalBoxesCount: number | undefined,
+    totalUnitsCount: number | undefined
 ): ColumnsType<LocationRow> => [
         {
             title: "Location Code",
@@ -74,14 +76,16 @@ const getWarehouseLocationColumns = (
             ),
         },
         {
-            title: "Total Boxes",
+            title: `Total Boxes ${totalBoxesCount ? "(" + totalBoxesCount + ")" : ""}`,
             dataIndex: "totalBoxes",
             key: "totalBoxes",
+            sorter: true
         },
         {
-            title: "Total Units",
+            title: `Total Units ${totalUnitsCount ? "(" + totalUnitsCount + ")" : ""}`,
             dataIndex: "totalUnits",
             key: "totalUnits",
+            sorter: true
         },
         {
             title: "Model Number",

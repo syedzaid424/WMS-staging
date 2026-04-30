@@ -16,7 +16,7 @@ import useVisibleSidebarItem from "../hooks/useVisibleSidebarItem.tsx";
 import { useGeneralStore } from "../store/main/generalStore";
 import AppSelect from "../components/select.tsx";
 import type { ApiResponse, SelectInterface } from "../utils/types.ts";
-import { apiRoutes, routePrefix } from "../utils/constants.ts";
+import { apiRoutes, routePrefix, warehouseDefaultPagination } from "../utils/constants.ts";
 import { useInfiniteSelectFetch } from "../hooks/useInfiniteSelectFetch.ts";
 import { useMutation } from "../hooks/useMutatation.ts";
 import { useWarehouseStore } from "../store/main/warehouseStore.ts";
@@ -58,7 +58,7 @@ const AppLayout = () => {
         shouldRefreshEnable: true,
         getList: (data) => data?.data?.warehouses,
         getTotal: (data) => data?.data?.totalElements,
-        pageSize: 10,     //initial pageSize here only.
+        pageSize: warehouseDefaultPagination,     //initial pageSize here only.
         onData: (data: AxiosResponse<WarehouseListingResponse>) => {
             setWarehouseRecord(data?.data)
         }

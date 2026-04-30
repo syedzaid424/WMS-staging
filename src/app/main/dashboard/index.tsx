@@ -16,7 +16,7 @@ import { useAuthStore } from "../../../store/auth/authStore";
 import AppSelect from "../../../components/select";
 import { useInfiniteSelectFetch } from "../../../hooks/useInfiniteSelectFetch";
 import type { SelectInterface } from "../../../utils/types";
-import { apiRoutes } from "../../../utils/constants";
+import { apiRoutes, warehouseDefaultPagination } from "../../../utils/constants";
 import type { Warehouse } from "../../../types/main/warehouse";
 import { useWarehouseStore } from "../../../store/main/warehouseStore";
 import { FaWarehouse } from "react-icons/fa6";
@@ -56,6 +56,8 @@ const Dashboard = () => {
     const { user } = useAuthStore();
     const { warehouseRefreshKey } = useWarehouseStore();
     const recentOrdersColumns = useRecentOrdersColumns();
+    const [selectedWarehouseFilter, setSelectedWarehouseFilter] = useState<number[]>([Number(user?.warehouseId)]);
+
 
     // hydratedOptions for paginated select items so it will always show the selected option regardless of it exist on that page or not.
     const hydratedOptions = useMemo(() => (
@@ -129,6 +131,7 @@ const Dashboard = () => {
             try {
                 setCardsLoading(true);
                 setRecentOrdersLoading(true);
+                setSelectedWarehouseFilter([Number(user?.warehouseId)]);
                 await fetchAllRecords({
                     filters: {
                         warehouses: [String(user?.warehouseId)],
@@ -167,12 +170,13 @@ const Dashboard = () => {
         shouldRefreshEnable: true,
         getList: (data) => data?.data?.warehouses,
         getTotal: (data) => data?.data?.totalElements,
-        pageSize: 50,     //initial pageSize here only.
+        pageSize: warehouseDefaultPagination,     //initial pageSize here only.
     });
 
     // warehouse filter handler
     const warehouseChangeHandler = async (val: string[]) => {
         try {
+            setSelectedWarehouseFilter(val as any)
             setCardsLoading(true);
             setRecentOrdersLoading(true);
             await fetchAllRecords({
@@ -198,7 +202,7 @@ const Dashboard = () => {
                     </div>
                     {/* warehouse selection */}
                     <AppSelect
-                        defaultValue={[Number(user?.warehouseId) as any]}
+                        value={selectedWarehouseFilter as any}
                         placeholder="Filter by Warehouses"
                         options={availableLocations}
                         hydratedOptions={hydratedOptions}

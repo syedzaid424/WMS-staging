@@ -1,5 +1,5 @@
 import { Col, Row } from "antd";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { ColumnsType } from "antd/es/table";
 import LocationMutatingModal from "./components/locationMutationModal";
 import { useAuthStore } from "../../../../store/auth/authStore";
@@ -23,12 +23,23 @@ import type { FilterField } from "../../../../components/filterbar/types/types";
 import { useMutation } from "../../../../hooks/useMutatation";
 import getWarehouseLocationColumns from "./utils/getWarehouseLocationColumns";
 import { appRoutes } from "../../../../utils/constants";
-import type { TableRowSelection } from "antd/es/table/interface";
+import type { SorterResult, TableRowSelection } from "antd/es/table/interface";
 import QrBulkPermissionModal from "../../../../components/qrBulkModal/qrBulkModal";
+
+const sortMap: Record<string, string> = {
+    totalBoxes: "boxesPerLocation",
+    totalUnits: "unitsPerLocation",
+};
+
+const sortDirMap: Record<string, string> = {
+    ascend: "asc",
+    descend: "desc"
+}
 
 const Location = () => {
     const locationFilterSchema = defaultFilterSchema as FilterField<LocationListFilterValues>[]
     const [searchParams] = useSearchParams()
+    const prevSortRef = useRef<SorterResult<LocationRow>>({});
     const navigate = useNavigate()
     const [pagination, setPagination] = useState({
         page: 1,
@@ -48,6 +59,10 @@ const Location = () => {
         boxRange: null,
     })
     const { user } = useAuthStore();
+    const [sorting, setSorting] = useState<SorterResult<LocationRow>>({
+        field: undefined,
+        order: undefined
+    })
 
     const params = useMemo(() => {
         let range = null
@@ -64,6 +79,8 @@ const Location = () => {
             search: filtersValues.search,
             itemStatus: filtersValues.itemStatus,
             inventoryStatus: filtersValues.inventoryStatus,
+            sortBy: sortMap[sorting.field as string] || "",
+            sortDir: sortDirMap[sorting.order as string] || "",
             ...(range && {
                 minBox: range[0],
                 maxBox: range[1],
@@ -76,6 +93,8 @@ const Location = () => {
         filtersValues.itemStatus,
         filtersValues.inventoryStatus,
         filtersValues.boxRange,
+        sorting.field,
+        sorting.order
     ]);
 
     // to generate Locations listing.
@@ -131,8 +150,15 @@ const Location = () => {
     }, [refreshLocations])
 
     const locationColumns: ColumnsType<LocationRow> = useMemo(
-        () => getWarehouseLocationColumns(handleNavigation, handleEdit, handleQR, handleClearLocation, clearLocationsLoading),
-        [handleNavigation, handleEdit, handleQR, clearLocationsLoading],
+        () => getWarehouseLocationColumns(
+            handleNavigation,
+            handleEdit,
+            handleQR,
+            handleClearLocation,
+            clearLocationsLoading,
+            data?.data?.totalBoxes ?? 0,
+            data?.data?.totalUnits ?? 0),
+        [handleNavigation, handleEdit, handleQR, clearLocationsLoading, data?.data?.totalBoxes, data?.data?.totalUnits],
     );
 
     const handleFilterChange = useCallback((selected: LocationListFilterValues) => {
@@ -169,6 +195,36 @@ const Location = () => {
         }
     }
 
+    // currently working for sorting only.
+    const tableChangeHandler = (_pagination: any, _filters: any, sorter: SorterResult<LocationRow> | SorterResult<LocationRow>[]) => {
+        if (data?.data?.totalElements && data?.data?.totalElements > 1) {
+            const sortObj = Array.isArray(sorter) ? sorter[0] : sorter;
+            const newField = sortObj?.field;
+            const newOrder = sortObj?.order;
+
+            const prev = prevSortRef.current;
+
+            const sortChanged = prev.field !== newField || prev.order !== newOrder;
+
+            if (sortChanged) {
+                prevSortRef.current = {
+                    field: newField,
+                    order: newOrder,
+                };
+
+                setSorting({
+                    field: newField,
+                    order: newOrder,
+                });
+
+                setPagination((p) => ({
+                    ...p,
+                    page: 1,
+                }));
+            }
+        }
+    }
+
     return (
         <Row className="gap-5 w-full">
             <Col span={24} className="intro-row">
@@ -202,6 +258,7 @@ const Location = () => {
                     loading={loading}
                     total={total}
                     currentPage={pagination.page}
+                    onChange={tableChangeHandler}
                     pageSize={pagination.pageSize}
                     onPageChange={handlePageChange}
                     scroll={{ x: "max-content" }}

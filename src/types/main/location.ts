@@ -54,7 +54,9 @@ interface LocationResponse {
   pageNo: number;
   pageSize: number;
   totalElements: number;
+  totalBoxes: number;
   totalPages: number;
+  totalUnits: number;
   locations: Location[];
 }
 

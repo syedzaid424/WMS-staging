@@ -19,7 +19,7 @@ const Items = () => {
 
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 50,
+    pageSize: 10,
     total: 0,
   });
   const [searchValue, setSearchValue] = useState("")

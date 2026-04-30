@@ -1,16 +1,15 @@
 import * as yup from "yup";
 
-const loginSchema = yup.object({
+const loginSchema = {
     email: yup
         .string()
         .email("Enter a valid email")
         .required("Email is required"),
+
     password: yup
         .string()
         .min(6, "Password must be at least 6 characters")
         .required("Password is required"),
-});
+};
 
-export {
-    loginSchema
-}
+export { loginSchema };

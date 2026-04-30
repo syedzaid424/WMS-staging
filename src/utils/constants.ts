@@ -41,6 +41,8 @@ const AUTH_CHANNEL = "auth_channel";
 const authChannel = new BroadcastChannel(AUTH_CHANNEL);
 
 const apiRoutes = {
+  //AUTH
+  LOGIN: "/auth/authenticate",
   // DASHBOARD
   GET_SKUS_COUNT: "/dashboard/total-skus",
   GET_LOW_STOCKS_COUNT: "/dashboard/low-stock",
@@ -99,6 +101,7 @@ const apiRoutes = {
 };
 
 const palletSpecificLocationType = "STAGING";
+const warehouseDefaultPagination = 50;
 
 export {
   appRoutes,
@@ -106,4 +109,5 @@ export {
   routePrefix,
   apiRoutes,
   palletSpecificLocationType,
+  warehouseDefaultPagination
 };

@@ -14,7 +14,7 @@ import { warehouseApiRoutes } from "../utils/apiRoutes"
 
 const defaultFilters = {
     page: 1,
-    pageSize: 50,
+    pageSize: 10,
     search: ""
 }
 

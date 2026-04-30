@@ -5,16 +5,16 @@ import type { RoleListingResponse, UserRow } from "../../../../../../../types/ma
 
 interface UserMutationFormHook {
     // Primary warehouse — own instance
-    availablePrimaryWarehouses: SelectInterface[];
-    primaryWarehouseLoading: boolean;
-    hasMorePrimaryWarehouses: boolean;
-    handleLoadMorePrimaryWarehouses: () => void;
-    handlePrimaryWarehouseSearch: (val: string) => void;
-    primaryWarehouseRuntimeHydrated: SelectInterface[];
-    onSelectPrimaryWarehouse: (opt: any, mode?: string) => void;
-    onDeselectPrimaryWarehouse: (val: any) => void;
-    onClearPrimaryWarehouse: () => void;
-    onPrimaryWarehouseDropdownChange: (open: boolean) => void;
+    // availablePrimaryWarehouses: SelectInterface[];
+    // primaryWarehouseLoading: boolean;
+    // hasMorePrimaryWarehouses: boolean;
+    // handleLoadMorePrimaryWarehouses: () => void;
+    // handlePrimaryWarehouseSearch: (val: string) => void;
+    // primaryWarehouseRuntimeHydrated: SelectInterface[];
+    // onSelectPrimaryWarehouse: (opt: any, mode?: string) => void;
+    // onDeselectPrimaryWarehouse: (val: any) => void;
+    // onClearPrimaryWarehouse: () => void;
+    // onPrimaryWarehouseDropdownChange: (open: boolean) => void;
 
     // Warehouses multi — own instance
     availableWarehouses: SelectInterface[];
@@ -27,7 +27,8 @@ interface UserMutationFormHook {
     onDeselectWarehouse: (val: any) => void;
     onClearWarehouse: () => void;
     onWarehouseDropdownChange: (open: boolean) => void;
-
+    currentWarehouseIds?: any[];
+    warehouseIdsInitialized?: boolean
     // rest
     availableRoles: RoleListingResponse[] | [];
     editResponseState?: UserRow;
@@ -36,16 +37,16 @@ interface UserMutationFormHook {
 }
 
 const useUserMutationFormHook = ({
-    availablePrimaryWarehouses,
-    primaryWarehouseLoading,
-    hasMorePrimaryWarehouses,
-    handleLoadMorePrimaryWarehouses,
-    handlePrimaryWarehouseSearch,
-    primaryWarehouseRuntimeHydrated,
-    onSelectPrimaryWarehouse,
-    onDeselectPrimaryWarehouse,
-    onClearPrimaryWarehouse,
-    onPrimaryWarehouseDropdownChange,
+    // availablePrimaryWarehouses,
+    // primaryWarehouseLoading,
+    // hasMorePrimaryWarehouses,
+    // handleLoadMorePrimaryWarehouses,
+    // handlePrimaryWarehouseSearch,
+    // primaryWarehouseRuntimeHydrated,
+    // onSelectPrimaryWarehouse,
+    // onDeselectPrimaryWarehouse,
+    // onClearPrimaryWarehouse,
+    // onPrimaryWarehouseDropdownChange,
 
     availableWarehouses,
     warehouseLoading,
@@ -62,6 +63,8 @@ const useUserMutationFormHook = ({
     editResponseState,
     rolesLoading,
     formType = "create",
+    currentWarehouseIds = [],
+    warehouseIdsInitialized
 }: UserMutationFormHook) => {
 
     // roles listing mapping
@@ -79,41 +82,51 @@ const useUserMutationFormHook = ({
         }));
     }, [editResponseState]);
 
-    // hydrated option for primary warehouse
-    const selectedPrimaryWarehouseOptionFromBackend = useMemo<SelectInterface[]>(() => {
-        if (!editResponseState?.warehouseIds?.length) return [];
-        const matchedItem = editResponseState.warehouseIds.find(w => Number(editResponseState?.primaryWarehouseId) == Number(w?.value));
-        return matchedItem ? [matchedItem] : []
-    }, [editResponseState]);
+    // creating a set of currentWarehouseIds
+    const currentWarehouseIdsSet = useMemo(() => {
+        if (!currentWarehouseIds?.length) return new Set<any>();
+        return new Set(
+            currentWarehouseIds.map((w: any) =>
+                // warehouseIds values can be plain ids or objects {label, value}
+                typeof w === "object" ? w?.value : w
+            )
+        );
+    }, [currentWarehouseIds]);
+
+    // merge(run time + selected warehouse options from backend) + filter logic
+    const primaryWarehouseOptions = useMemo<SelectInterface[]>(() => {
+
+        // Start with runtime hydrated (what user has selected live)
+        const runtimeMap = new Map<any, SelectInterface>(
+            warehouseRuntimeHydrated.map((opt) => [opt.value, opt])
+        );
+        // Merge in backend-hydrated options (for edit initial state)
+        selectedWarehouseOptionsFromBackend.forEach((opt) => {
+            if (!runtimeMap.has(opt.value)) {
+                runtimeMap.set(opt.value, opt);
+            }
+        });
+        // only skip filtering if we genuinely haven't initialized yet
+        if (!warehouseIdsInitialized) {
+            return Array.from(runtimeMap.values());
+        }
+        // Once initialized, always filter, even if the result is empty
+        return Array.from(runtimeMap.values()).filter((opt) =>
+            currentWarehouseIdsSet.has(opt.value)
+        );
+    }, [warehouseRuntimeHydrated, selectedWarehouseOptionsFromBackend, currentWarehouseIdsSet, formType]);
 
     // Shared field base for primary warehouse
+    // dependent on run time warehouse selection because as soon as user select a warehouse the option will be available in primary warehouse to select.
     const primaryWarehouseFieldBase = useMemo(() => ({
         type: "select" as FieldType,
-        options: availablePrimaryWarehouses,
+        options: primaryWarehouseOptions,
         inputClassName: "h-10",
         showSearch: true,
-        searchMode: "remote" as "local" | "remote",
-        enableInfiniteScroll: true,
-        hasMore: hasMorePrimaryWarehouses,
-        onLoadMore: handleLoadMorePrimaryWarehouses,
-        loading: primaryWarehouseLoading,
-        onRemoteSearch: handlePrimaryWarehouseSearch,
-        runtimeHydratedOptions: primaryWarehouseRuntimeHydrated,
-        onSelectOption: onSelectPrimaryWarehouse,
-        onDeselectOption: onDeselectPrimaryWarehouse,
-        onClearAll: onClearPrimaryWarehouse,
-        onDropdownVisibleChange: onPrimaryWarehouseDropdownChange,
+        searchMode: "local" as "local" | "remote",
+        enableInfiniteScroll: false,
     }), [
-        availablePrimaryWarehouses,
-        hasMorePrimaryWarehouses,
-        handleLoadMorePrimaryWarehouses,
-        primaryWarehouseLoading,
-        handlePrimaryWarehouseSearch,
-        primaryWarehouseRuntimeHydrated,
-        onSelectPrimaryWarehouse,
-        onDeselectPrimaryWarehouse,
-        onClearPrimaryWarehouse,
-        onPrimaryWarehouseDropdownChange,
+        primaryWarehouseOptions,
     ]);
 
     // Shared field base for warehouses multi
@@ -159,19 +172,19 @@ const useUserMutationFormHook = ({
             loading: rolesLoading, showSearch: true,
         },
         {
-            ...primaryWarehouseFieldBase,
-            name: "primaryWarehouseId",
-            label: "Primary Warehouse",
-            span: 8,
-            placeholder: "Select primary warehouse",
-        },
-        {
             ...warehousesFieldBase,
             name: "warehouseIds",
             label: "Warehouses",
             span: 8,
             placeholder: "Select warehouses",
         },
+        {
+            ...primaryWarehouseFieldBase,
+            name: "primaryWarehouseId",
+            label: "Primary Warehouse",
+            span: 8,
+            placeholder: "Select primary warehouse",
+        }
     ], [availableRolesListing, rolesLoading, primaryWarehouseFieldBase, warehousesFieldBase]);
 
     const editFields = useMemo(() => [
@@ -185,14 +198,6 @@ const useUserMutationFormHook = ({
             loading: rolesLoading, showSearch: true
         },
         {
-            ...primaryWarehouseFieldBase,
-            name: "primaryWarehouseId",
-            label: "Primary Warehouse",
-            span: 8,
-            placeholder: "Select primary warehouse",
-            selectedOptionsFromBackend: selectedPrimaryWarehouseOptionFromBackend
-        },
-        {
             ...warehousesFieldBase,
             name: "warehouseIds",
             label: "Warehouses",
@@ -200,12 +205,18 @@ const useUserMutationFormHook = ({
             placeholder: "Select warehouses",
             selectedOptionsFromBackend: selectedWarehouseOptionsFromBackend,
         },
+        {
+            ...primaryWarehouseFieldBase,
+            name: "primaryWarehouseId",
+            label: "Primary Warehouse",
+            span: 8,
+            placeholder: "Select primary warehouse",
+        },
     ], [availableRolesListing,
         rolesLoading,
         primaryWarehouseFieldBase,
         warehousesFieldBase,
         selectedWarehouseOptionsFromBackend,
-        selectedPrimaryWarehouseOptionFromBackend
     ]);
 
     return formType === "create" ? createFields : editFields;

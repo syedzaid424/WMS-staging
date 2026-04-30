@@ -37,7 +37,7 @@ const PalletMutationModal = ({ open, setOpen, setRefreshPallets }: PalletMutatio
         SelectInterface
     >({
         endpoint: warehouseApiRoutes.getLocations,
-        extraParams: { locationTypeName: palletSpecificLocationType },
+        extraParams: { search: palletSpecificLocationType },
         mapOption: (w) => ({
             label: w.name,
             value: w.id,

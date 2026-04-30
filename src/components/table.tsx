@@ -120,6 +120,8 @@ function AppTable<T extends object>({
         );
     }, [columns, visibleColumns]);
 
+    console.log("filteredColumns", filteredColumns)
+
     /* ---------- inject editable config into columns ---------- */
 
     const mergedColumns = useMemo(() => {
@@ -183,6 +185,8 @@ function AppTable<T extends object>({
 
         return [...withEditable, actionColumn];
     }, [filteredColumns, editable, editingKey]);
+
+    console.log("mergedColumns", mergedColumns)
 
     /* ================= RENDER ================= */
 
