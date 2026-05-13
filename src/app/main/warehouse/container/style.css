@@ -1,0 +1,117 @@
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 8px 0;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.model-input {
+    width: 300px !important;
+}
+
+/* table */
+.table-wrapper {
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    overflow: hidden;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.item-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.table-th {
+    background: #fafafa;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    white-space: nowrap;
+}
+
+.action-th {
+    text-align: center;
+}
+
+.item-row {
+    transition: background 0.15s;
+}
+
+.item-row:not(:last-child) td {
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.item-row:hover {
+    background: #fafcff;
+}
+
+.item-cell {
+    padding: 8px 14px;
+    vertical-align: middle;
+}
+
+.action-cell {
+    text-align: center;
+}
+
+.cell-text {
+    font-size: 13px;
+    color: #333;
+}
+
+/* boxes input — tighter look inside table */
+.boxes-input {
+    width: 100% !important;
+}
+
+.boxes-input .ant-input-number-input {
+    padding: 3px 8px;
+}
+
+/* delete button */
+.delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #bbb;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.delete-btn:hover {
+    background: #fff1f0;
+    color: #ff4d4f;
+}
+
+/* empty state */
+.empty-state {
+    text-align: center;
+    padding: 32px 0;
+    color: #aaa;
+    font-size: 13px;
+    border: 1px dashed #e8e8e8;
+    border-radius: 8px;
+}
+
+/* footer button */
+.create-btn {
+    width: 160px;
+    align-self: flex-end;
+}

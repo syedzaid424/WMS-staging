@@ -43,6 +43,7 @@ interface Location {
   itemCode: string | null;
   itemSku: string | null;
   itemStatus: string;
+  palletCode: string[] | null;
 }
 
 // location row record

@@ -79,6 +79,7 @@ export default function useFetch<TData extends BaseApiResponse = any, TParams = 
                 if (showSuccessRef.current) {
                     message.success(result?.message || successMessageRef.current);
                 }
+                return result;
             } catch (err: any) {
                 if (axios.isCancel(err) || signal.aborted) return;
                 setError(err);

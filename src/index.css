@@ -89,6 +89,14 @@
         border: 1px solid var(--color-primary) !important;
     }
 
+    .ant-picker-outlined:hover,
+    .ant-picker-outlined:focus,
+    .ant-picker-outlined:active,
+    .ant-picker-outlined:focus-visible,
+    .ant-picker-outlined:focus-within {
+        box-shadow: none !important;
+        border: 1px solid var(--color-primary) !important;
+    }
 
     /* antd menu colors */
     .ant-menu-dark.ant-menu-root.ant-menu-inline {
@@ -148,6 +156,10 @@
 
 .error-bg {
     background-color: var(--color-bg-error) !important;
+}
+
+.disabled-bg {
+    background-color: #e5e7eb !important;
 }
 
 a {

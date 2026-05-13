@@ -34,14 +34,33 @@ interface ContainerDetailRow extends ContainerItem { }
 interface ContainerDetailsResponse {
     id: number;
     containerNo: string;
-    etaPort: string; 
-    createdAt: string; 
+    etaPort: string;
+    createdAt: string;
     items: ContainerItem[];
+}
+
+interface ContainerItemVerificationResponse {
+    itemId: number,
+    modelNo: string,
+    sku: string,
+    name: string,
+    itemPerBox: number,
+    totalBoxes: number
+}
+
+interface ContainerCreationPayload {
+    itemListing: ContainerItemVerificationResponse[];
+    containerForm: {
+        containerNo: string;
+        etaPort: string;
+    };
 }
 
 export type {
     ContainerResponse,
     ContainerRow,
     ContainerDetailsResponse,
-    ContainerDetailRow
+    ContainerDetailRow,
+    ContainerItemVerificationResponse,
+    ContainerCreationPayload
 }

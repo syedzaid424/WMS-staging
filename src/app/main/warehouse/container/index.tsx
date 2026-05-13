@@ -6,11 +6,15 @@ import Loader from "../../../../components/loader"
 import { useEffect, useMemo, useState } from "react"
 import useFetch from "../../../../hooks/useFetch"
 import type { ApiResponse } from "../../../../utils/types"
-import type { ContainerResponse, ContainerRow } from "../../../../types/main/container"
+import type { ContainerCreationPayload, ContainerResponse, ContainerRow } from "../../../../types/main/container"
 import AppTable from "../../../../components/table"
 import { useQueryFilters } from "../../../../hooks/useQueryFilter"
 import useContainerColumns from "./hooks/useContainerColumns"
 import { warehouseApiRoutes } from "../utils/apiRoutes"
+import AppButton from "../../../../components/button"
+import CreateContainerModal from "./components/createContainerModal"
+import { useMutation } from "../../../../hooks/useMutatation"
+import { useAuthStore } from "../../../../store/auth/authStore"
 
 const defaultFilters = {
     page: 1,
@@ -26,21 +30,38 @@ const Container = () => {
     const [totalRecordsCount, setTotalRecordsCount] = useState(0);
     // const [viewContainerItemsModal, setViewContainerItemsModal] = useState(false);
     // const [containerCode, setContainerCode] = useState<string>("");
+    const [openModal, setOpenModal] = useState(false);
+    const [refreshContainers, setRefreshContainers] = useState(0);
+    const { user } = useAuthStore();
 
     const params = useMemo(
         () => ({
             pageNo: filters.page - 1,
             pageSize: filters.pageSize,
-            search: filters.search
+            search: filters.search,
         }),
         [filters]
     );
+
+    useEffect(() => {
+        if (user?.warehouseId) {
+            updateFilters({ page: 1, search: "" });
+        }
+    }, [user?.warehouseId, refreshContainers]);
 
     // to generate containers listing.
     const { loading, data } = useFetch<ApiResponse<ContainerResponse>>({
         endpoint: warehouseApiRoutes.getContainers,
         params,
+        enabled: !!user?.warehouseId,
+        refreshTrigger: [user?.warehouseId, refreshContainers],
         showSuccessMessage: false
+    });
+
+    const { mutate, loading: creationContainerLoading } = useMutation<ApiResponse<any>>({
+        endpoint: warehouseApiRoutes.createContainer,
+        method: "post",
+        showSuccessMessage: true,
     });
 
 
@@ -66,6 +87,22 @@ const Container = () => {
         })
     };
 
+    const actionHandler = () => {
+        setOpenModal(true);
+    };
+
+    const createContainerHandler = async (container: ContainerCreationPayload) => {
+        const payload = {
+            containerItems: container.itemListing,
+            ...container.containerForm
+        }
+        const resp = await mutate(payload);
+        if (resp?.status == '200' || resp?.status == '201') {
+            setOpenModal(false);
+            setRefreshContainers(prev => prev + 1)
+        }
+    }
+
     return (
         <Row className="gap-5 w-full">
             <Col span={24} className="intro-row">
@@ -74,6 +111,9 @@ const Container = () => {
                         <AppTitle level={3} className="primary-color">
                             Containers
                         </AppTitle>
+                    </div>
+                    <div className="flex gap-3 items-center flex-wrap">
+                        <AppButton onClick={actionHandler}>Create Container</AppButton>
                     </div>
                 </Row>
             </Col>
@@ -101,6 +141,14 @@ const Container = () => {
                     scroll={{ x: "max-content" }}
                 />
             </Col>
+
+            <CreateContainerModal
+                open={openModal}
+                setOpen={setOpenModal}
+                createContainerHandler={createContainerHandler}
+                creationContainerLoading={creationContainerLoading}
+            />
+
         </Row>
     )
 }

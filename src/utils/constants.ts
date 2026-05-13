@@ -65,6 +65,8 @@ const apiRoutes = {
   // CONTAINERS
   GET_CONTAINERS: "/container/all",
   GET_CONTAINER: "/container",
+  GET_CONTAINER_ITEM_VALIDATION: "/container/validate-model-no",
+  CREATE_CONTAINER: "/container",
   // LABELS VERFICATION
   GET_LABELS: "/shipment-label-verification",
   GET_SHIPMENT_CARRIERS: "/shipment-label-verification/carriers",

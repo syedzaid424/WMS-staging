@@ -33,28 +33,64 @@ const getWarehouseLocationColumns = (
             ),
         },
         {
-            title: "Name",
-            dataIndex: "name",
-            key: "name",
+            title: "Model Number",
+            dataIndex: "itemCode",
+            key: "itemCode",
+            render: (values: string) => (
+                <MultiValueCell values={values?.split(',')} navigationPath={appRoutes.INVENTORY} maxVisible={1} />
+            ),
         },
         {
-            title: "Description",
-            dataIndex: "description",
-            key: "description",
-            render: (val) => val || "-",
+            title: "Item SKU",
+            dataIndex: "itemSku",
+            key: "itemSku",
+            render: (values: string) => (
+                <MultiValueCell values={values?.split(',')} maxVisible={1} />
+            ),
         },
         {
-            title: "Location Type",
-            dataIndex: "locationType",
-            key: "locationType",
+            title: "Pallet Codes",
+            dataIndex: "palletCode",
+            key: "palletCode",
+            render: (values: string) => (
+                <MultiValueCell values={values?.split(',')} maxVisible={1} />
+            ),
+        },
+        // {
+        //     title: "Name",
+        //     dataIndex: "name",
+        //     key: "name",
+        // },
+        // {
+        //     title: "Description",
+        //     dataIndex: "description",
+        //     key: "description",
+        //     render: (val) => val || "-",
+        // },
+        // {
+        //     title: "Location Type",
+        //     dataIndex: "locationType",
+        //     key: "locationType",
+        // },
+        // {
+        //     title: "Parent Location Name",
+        //     dataIndex: "parentLocationName",
+        //     key: "parentLocationName",
+        //     render: (val) => val || "-",
+        // },
+        {
+            title: `Total Boxes ${totalBoxesCount ? "(" + totalBoxesCount + ")" : ""}`,
+            dataIndex: "totalBoxes",
+            key: "totalBoxes",
+            sorter: true
         },
         {
-            title: "Parent Location Name",
-            dataIndex: "parentLocationName",
-            key: "parentLocationName",
-            render: (val) => val || "-",
+            title: `Total Units ${totalUnitsCount ? "(" + totalUnitsCount + ")" : ""}`,
+            dataIndex: "totalUnits",
+            key: "totalUnits",
+            sorter: true
         },
-        {
+             {
             title: "Warehouse Name",
             dataIndex: "warehouseName",
             key: "warehouseName",
@@ -73,34 +109,6 @@ const getWarehouseLocationColumns = (
             key: "inventoryStatus",
             render: (value: string) => (
                 <StatusContent status={value} />
-            ),
-        },
-        {
-            title: `Total Boxes ${totalBoxesCount ? "(" + totalBoxesCount + ")" : ""}`,
-            dataIndex: "totalBoxes",
-            key: "totalBoxes",
-            sorter: true
-        },
-        {
-            title: `Total Units ${totalUnitsCount ? "(" + totalUnitsCount + ")" : ""}`,
-            dataIndex: "totalUnits",
-            key: "totalUnits",
-            sorter: true
-        },
-        {
-            title: "Model Number",
-            dataIndex: "itemCode",
-            key: "itemCode",
-            render: (values: string) => (
-                <MultiValueCell values={values?.split(',')} navigationPath={appRoutes.INVENTORY} maxVisible={1} />
-            ),
-        },
-        {
-            title: "Item SKU",
-            dataIndex: "itemSku",
-            key: "itemSku",
-            render: (values: string) => (
-                <MultiValueCell values={values?.split(',')} maxVisible={1} />
             ),
         },
         {
