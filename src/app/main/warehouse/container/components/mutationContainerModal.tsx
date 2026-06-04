@@ -7,7 +7,7 @@ import type { ContainerCreationPayload, ContainerDetailsResponse, ContainerEditP
 import { Input, message } from 'antd';
 import AppText from '../../../../../components/text';
 import AppButton from '../../../../../components/button';
-import ItemRow, { CONTAINER_ITEM_COLUMNS } from './itemRow';
+import ItemRow, { CONTAINER_ITEM_COLUMNS_ADD, CONTAINER_ITEM_COLUMNS_EDIT } from './itemRow';
 import '../style.css';
 import dayjs from 'dayjs';
 import AppDatePicker from '../../../../../components/datePicker';
@@ -49,6 +49,7 @@ const MutationContainerModal = ({
 
     const [itemModelCode, setItemModelCode] = useState('');
     const [itemListing, setItemsListing] = useState<ContainerItem[]>([]);
+    const [errorFields, setErrorFields] = useState<Record<string, boolean>>({});
     const [containerForm, setContainerForm] = useState(defaultFormState);
 
     // Populate form when opening in edit mode
@@ -97,15 +98,31 @@ const MutationContainerModal = ({
         setItemsListing((prev) => prev.filter((i) => i.itemCode !== modelNo));
     }, []);
 
-    const handleUpdate = useCallback((modelNo: string, totalBoxes: number) => {
+    const handleUpdate = useCallback((modelNo: string, key: keyof ContainerItemVerificationResponse, value: number) => {
+        if (key === "remainingBoxes") {
+            let item = itemListing.find(item => String(item.itemCode) === String(modelNo));
+            if (item) {
+                let updatedErrorFields = errorFields;
+                let isValueGreater = value > item?.totalBoxes;
+                if (isValueGreater) {
+                    if (!updatedErrorFields[modelNo]) {
+                        updatedErrorFields[modelNo] = true;
+                    }
+                } else {
+                    delete updatedErrorFields[modelNo]
+                }
+                setErrorFields(updatedErrorFields)
+            }
+        }
         setItemsListing((prev) =>
-            prev.map((i) => (i.itemCode === modelNo ? { ...i, totalBoxes } : i))
+            prev.map((i) => (String(i.itemCode) === String(modelNo) ? { ...i, [key]: value } : i))
         );
-    }, []);
+    }, [itemListing, errorFields]);
 
     const resetModalState = () => {
         setItemsListing([]);
         setItemModelCode("");
+        setErrorFields({});
         setContainerForm(defaultFormState);
         if (setEditRecord) setEditRecord(undefined);
     }
@@ -118,6 +135,10 @@ const MutationContainerModal = ({
 
     const validateAndBuildPayload = (): ContainerCreationPayload | null => {
         if (itemListing.length === 0) return null;
+        else if (Object.keys(errorFields).length > 0) {
+            message.error(`Remaining boxes can't be greater than total boxes`);
+            return null
+        }
 
         const itemWithZeroBoxes = itemListing.find(item => item.totalBoxes === 0);
         if (itemWithZeroBoxes) {
@@ -219,11 +240,20 @@ const MutationContainerModal = ({
                                     <table className="item-table">
                                         <thead>
                                             <tr>
-                                                {CONTAINER_ITEM_COLUMNS.map((col) => (
-                                                    <th key={col.key} style={{ width: col.width }} className="table-th">
-                                                        {col.label}
-                                                    </th>
-                                                ))}
+                                                {
+                                                    !isEditMode ?
+                                                        CONTAINER_ITEM_COLUMNS_ADD.map((col) => (
+                                                            <th key={col.key} style={{ width: col.width }} className="table-th">
+                                                                {col.label}
+                                                            </th>
+                                                        ))
+                                                        :
+                                                        CONTAINER_ITEM_COLUMNS_EDIT.map((col) => (
+                                                            <th key={col.key} style={{ width: col.width }} className="table-th">
+                                                                {col.label}
+                                                            </th>
+                                                        ))
+                                                }
                                                 <th className="table-th action-th" style={{ width: "8%" }} />
                                             </tr>
                                         </thead>
@@ -234,6 +264,8 @@ const MutationContainerModal = ({
                                                     item={item}
                                                     onDelete={handleDelete}
                                                     onUpdate={handleUpdate}
+                                                    isEditMode={isEditMode}
+                                                    errorFields={errorFields}
                                                 />
                                             ))}
                                         </tbody>

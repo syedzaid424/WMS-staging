@@ -45,7 +45,8 @@ interface ContainerItemVerificationResponse {
     itemSku: string,
     itemName: string,
     unitPerBox: number,
-    totalBoxes: number
+    totalBoxes: number,
+    remainingBoxes?: number
 }
 
 interface ContainerCreationPayload {
