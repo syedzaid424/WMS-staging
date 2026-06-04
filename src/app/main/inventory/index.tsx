@@ -93,8 +93,12 @@ const Inventory = () => {
   );
 
   const handleFilterChange = useCallback((selected: InventoryListFilterValues) => {
-    setFiltersValues(selected)
-  }, [])
+    setFiltersValues(selected);
+    setPagination({
+      ...pagination,
+      page: 1
+    })
+  }, [pagination])
 
   return (
     <Row className="gap-5 w-full">

@@ -25,7 +25,7 @@ interface ContainerItem {
     itemName: string;
     unitPerBox: number;
     totalBoxes: number;
-    remainingBoxes: number;
+    remainingBoxes?: number;
 }
 
 interface ContainerDetailRow extends ContainerItem { }
@@ -41,15 +41,24 @@ interface ContainerDetailsResponse {
 
 interface ContainerItemVerificationResponse {
     itemId: number,
-    modelNo: string,
-    sku: string,
-    name: string,
-    itemPerBox: number,
+    itemCode: string,
+    itemSku: string,
+    itemName: string,
+    unitPerBox: number,
     totalBoxes: number
 }
 
 interface ContainerCreationPayload {
-    itemListing: ContainerItemVerificationResponse[];
+    itemListing: ContainerItem[];
+    containerForm: {
+        containerNo: string;
+        etaPort: string;
+    };
+}
+
+interface ContainerEditPayload {
+    itemListing: ContainerItem[];
+    id: string | number;
     containerForm: {
         containerNo: string;
         etaPort: string;
@@ -62,5 +71,7 @@ export type {
     ContainerDetailsResponse,
     ContainerDetailRow,
     ContainerItemVerificationResponse,
-    ContainerCreationPayload
+    ContainerCreationPayload,
+    ContainerItem,
+    ContainerEditPayload
 }

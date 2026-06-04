@@ -22,6 +22,7 @@ const Roles = () => {
             state: {
                 name: record.name,
                 permissions: record.permissions,
+                id: record.id
             }
         });
     };

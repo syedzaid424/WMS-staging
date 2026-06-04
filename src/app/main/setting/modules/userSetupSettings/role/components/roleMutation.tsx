@@ -56,21 +56,32 @@ const RoleMutation = () => {
         [editState]
     );
 
+    const editRoleId = useMemo(() => editState?.id ?? 0, [editState])
+
     const formFields = useRoleMutationFormHook({ permissionGroups, editPermissions });
 
     const { mutate, loading } = useMutation<ApiResponse<any>>({
         endpoint: activeType === 'create'
             ? settingApiRoute.createRole
             : settingApiRoute.editRole,
-        method: activeType === 'create' ? 'post' : 'put',
+        method: 'post',
         showSuccessMessage: true,
     });
 
     const handleSubmit = async (data: RoleFormValues) => {
-        const payload = {
-            name: data.name,
-            permissionIds: data.permissionIds ?? [],
-        };
+        let payload;
+        if (activeType == "create") {
+            payload = {
+                name: data.name,
+                permissionIds: data.permissionIds ?? [],
+            };
+        } else {
+            payload = {
+                name: data.name,
+                permissionIds: data.permissionIds ?? [],
+                id: editRoleId
+            };
+        }
         const res = await mutate(payload);
         navigate(`${appRoutes.SETTINGS_USERS_SETUP}?tab=roleListing`)
         return res?.status === '200';

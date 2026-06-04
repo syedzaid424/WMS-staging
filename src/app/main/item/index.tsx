@@ -71,6 +71,10 @@ const Items = () => {
 
   const searchHandler = (value: any) => {
     setSearchValue(value);
+    setPagination((prev) => ({
+      ...prev,
+      page: 1
+    }));
   }
 
   return (
@@ -94,7 +98,7 @@ const Items = () => {
           prefix={<IoIosSearch size={20} color="gray" />}
           setSearchDebouncedValue={searchHandler}
           className="h-11"
-          suffix={loading && <Loader size='default'  />}
+          suffix={loading && <Loader size='default' />}
         />
       </Col>
 

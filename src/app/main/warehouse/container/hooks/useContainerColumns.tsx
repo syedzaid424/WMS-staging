@@ -7,7 +7,7 @@ import { Tag } from "antd"
 import type { ContainerRow } from "../../../../../types/main/container"
 import { Link, useNavigate } from "react-router";
 import { appRoutes } from "../../../../../utils/constants";
-// import { FaCheck } from "react-icons/fa";
+import { EditOutlined } from "@ant-design/icons";
 
 
 const status = {
@@ -15,13 +15,21 @@ const status = {
     "COMPLETED": "Completed"
 }
 
-const useContainerColumns = () => {
+interface UseContainerColumnsInterface {
+    editContainerHandler: (record: ContainerRow) => void;
+}
+
+const useContainerColumns = ({ editContainerHandler }: UseContainerColumnsInterface) => {
 
     const navigate = useNavigate();
 
 
     const handleContainerDetails = async (record: ContainerRow) => {
         navigate(`${appRoutes.WAREHOUSE_CONTAINER_DETAIL}/${record?.containerNo}`)
+    }
+
+    const handleContainerEditDetails = (record: ContainerRow) => {
+        editContainerHandler(record)
     }
 
     const columns = useMemo<ColumnsType<ContainerRow>>(() => (
@@ -99,12 +107,11 @@ const useContainerColumns = () => {
                             disabled={record?.totalItems == 0 ? true : false}
                             onClick={() => handleContainerDetails(record)}
                         />
-                        {/* <AppButton 
-                            title={status.RECEIVED == record?.status ? "Update status" : "No action needed"}
-                            icon={<FaCheck />}
-                            disabled={status.RECEIVED == record?.status ? false : true}
-                            onClick={() => handleContainerDetails(record?.containerNo)}
-                        /> */}
+                        <AppButton
+                            title={"Edit container"}
+                            icon={<EditOutlined />}
+                            onClick={() => handleContainerEditDetails(record)}
+                        />
                     </div>
                 ),
             },

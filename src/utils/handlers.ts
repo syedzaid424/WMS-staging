@@ -35,4 +35,14 @@ export const sortMinMaxInRange = (range: number[], order = "asc") => {
   return range.sort((a, b) => (order === "asc" ? a - b : b - a));
 };
 
-export { downloadPDF };
+const createURLSearchParms = (payload: any) => {
+  const params = new URLSearchParams();
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, String(value));
+    }
+  });
+  return params.toString();
+}
+
+export { downloadPDF, createURLSearchParms };

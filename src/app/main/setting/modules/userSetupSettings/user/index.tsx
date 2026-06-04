@@ -40,6 +40,14 @@ const Users = ({ refreshLocationTypes }: LocationTypesProps) => {
 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (!data) return;
+        const apiData = data.data;
+        setPagination((prev) => ({
+            ...prev,
+            total: apiData?.totalElements || 0,
+        }));
+    }, [data]);
 
     useEffect(() => {
         if (refreshLocationTypes) {

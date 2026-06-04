@@ -57,6 +57,7 @@ const apiRoutes = {
   GET_LOCATION_TYPES: "/location-type",
   CREATE_LOCATION_TYPE: "/location-type",
   CLEAR_LOCATIONS: "/location/clear-location",
+  EXPORT_LOCATIONS: "/location/export",
   // PALLETS
   GET_PALLETS: "/pallet",
   CREATE_PALLET: "/pallet",
@@ -65,6 +66,7 @@ const apiRoutes = {
   // CONTAINERS
   GET_CONTAINERS: "/container/all",
   GET_CONTAINER: "/container",
+  EDIT_CONTAINER: "/container/update",
   GET_CONTAINER_ITEM_VALIDATION: "/container/validate-model-no",
   CREATE_CONTAINER: "/container",
   // LABELS VERFICATION
@@ -76,7 +78,7 @@ const apiRoutes = {
   UPDATE_USER_WAREHOUSE: "/user/warehouse",
   GET_ROLES: "/role",
   CREATE_ROLE: "/role",
-  EDIT_ROLE: "/",
+  EDIT_ROLE: "/role/update",
   CREATE_USER: "/user/register",
   GET_USERS: "/user/paginated",
   UPDATE_USER: "/user",
@@ -104,6 +106,7 @@ const apiRoutes = {
 
 const palletSpecificLocationType = "STAGING";
 const warehouseDefaultPagination = 50;
+const MIMEXLType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 export {
   appRoutes,
@@ -111,5 +114,6 @@ export {
   routePrefix,
   apiRoutes,
   palletSpecificLocationType,
-  warehouseDefaultPagination
+  warehouseDefaultPagination,
+  MIMEXLType
 };

@@ -10,7 +10,7 @@ import type {
     LocationRow,
 } from "../../../../types/main/location";
 import useFetch from "../../../../hooks/useFetch";
-import { downloadPDF, sortMinMaxInRange } from "../../../../utils/handlers";
+import { createURLSearchParms, downloadPDF, sortMinMaxInRange } from "../../../../utils/handlers";
 import AppButton from "../../../../components/button";
 import AppTitle from "../../../../components/title";
 import AppTable from "../../../../components/table";
@@ -22,9 +22,10 @@ import { useNavigate, useSearchParams } from "react-router";
 import type { FilterField } from "../../../../components/filterbar/types/types";
 import { useMutation } from "../../../../hooks/useMutatation";
 import getWarehouseLocationColumns from "./utils/getWarehouseLocationColumns";
-import { appRoutes } from "../../../../utils/constants";
+import { appRoutes, MIMEXLType } from "../../../../utils/constants";
 import type { SorterResult, TableRowSelection } from "antd/es/table/interface";
 import QrBulkPermissionModal from "../../../../components/qrBulkModal/qrBulkModal";
+import api from "../../../../utils/apiConfig";
 
 const sortMap: Record<string, string> = {
     totalBoxes: "boxesPerLocation",
@@ -34,6 +35,15 @@ const sortMap: Record<string, string> = {
 const sortDirMap: Record<string, string> = {
     ascend: "asc",
     descend: "desc"
+}
+
+const exportLocation = async (filters: any) => {
+    try {
+        let res: ApiResponse<any> = await api.get(`${warehouseApiRoutes.getExportedLocations}?${filters}`, { responseType: "blob" });
+        return res
+    } catch (error) {
+        return error
+    }
 }
 
 const Location = () => {
@@ -62,7 +72,8 @@ const Location = () => {
     const [sorting, setSorting] = useState<SorterResult<LocationRow>>({
         field: undefined,
         order: undefined
-    })
+    });
+    const [exportLocationLoading, setExportLocationLoading] = useState(false);
 
     const params = useMemo(() => {
         let range = null
@@ -112,6 +123,14 @@ const Location = () => {
         showSuccessMessage: true
     });
 
+    // clear pallet
+    const { mutate: clearPalletMutation } = useMutation<ApiResponse<any>>({
+        endpoint: warehouseApiRoutes.clearPallet,
+        method: "post",
+        showSuccessMessage: true,
+    });
+
+
     const total = data?.data?.totalElements || 0;
 
     const handlePageChange = (page: number, pageSize: number) => {
@@ -147,7 +166,14 @@ const Location = () => {
         if (res?.status == '200') {
             setRefreshLocations(prev => prev + 1)
         }
-    }, [refreshLocations])
+    }, [refreshLocations]);
+
+    const iconHandler = async (value: any) => {
+        let res = await clearPalletMutation({ params: { code: value } });
+        if (res) {
+            setRefreshLocations(prev => prev + 1);
+        }
+    }
 
     const locationColumns: ColumnsType<LocationRow> = useMemo(
         () => getWarehouseLocationColumns(
@@ -155,6 +181,7 @@ const Location = () => {
             handleEdit,
             handleQR,
             handleClearLocation,
+            iconHandler,
             clearLocationsLoading,
             data?.data?.totalBoxes ?? 0,
             data?.data?.totalUnits ?? 0),
@@ -162,8 +189,12 @@ const Location = () => {
     );
 
     const handleFilterChange = useCallback((selected: LocationListFilterValues) => {
+        setPagination({
+            ...pagination,
+            page: 1,
+        })
         setFiltersValues(selected)
-    }, []);
+    }, [pagination]);
 
     // on selection of row handler
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -225,6 +256,38 @@ const Location = () => {
         }
     }
 
+    const exportLocations = async () => {
+        setExportLocationLoading(true);
+        try {
+            const { pageNo, pageSize, ...rest } = params;
+            const payload = {
+                ...rest
+            }
+            const paramsString = createURLSearchParms(payload);
+            const res: any = await exportLocation(paramsString);
+            if (res) {
+                const blob = new Blob([res.data],
+                    {
+                        type: MIMEXLType,
+                    }
+                );
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "location.xlsx";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        finally {
+            setExportLocationLoading(false);
+        }
+    }
+
     return (
         <Row className="gap-5 w-full">
             <Col span={24} className="intro-row">
@@ -238,6 +301,7 @@ const Location = () => {
                     <div className="flex gap-3 items-center flex-wrap">
                         <AppButton onClick={actionHandler}>Create Location</AppButton>
                         <AppButton onClick={bulkUploadHandler}>Bulk Qr Code Generation</AppButton>
+                        <AppButton onClick={exportLocations} loading={exportLocationLoading}>Export Locations</AppButton>
                     </div>
 
                 </Row>

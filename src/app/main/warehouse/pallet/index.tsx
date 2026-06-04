@@ -148,6 +148,8 @@ const Pallets = () => {
         }
     }
 
+    console.log(data?.data?.pallets)
+
 
     return (
         <Row className="gap-5 w-full">

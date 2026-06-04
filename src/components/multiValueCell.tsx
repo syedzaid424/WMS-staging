@@ -5,12 +5,18 @@ interface MultiValueCellProps {
     values: string[];
     maxVisible?: number;
     navigationPath?: string;
+    icon?: React.ReactElement;
+    iconTitle?: string;
+    iconHandler?: (val: any) => void;
 }
 
 const MultiValueCell: React.FC<MultiValueCellProps> = ({
     values = [],
     maxVisible = 2,
-    navigationPath = ''
+    navigationPath = '',
+    icon,
+    iconTitle,
+    iconHandler
 }) => {
     const navigate = useNavigate()
     if (!values || !values.length) return <span>-</span>;
@@ -23,6 +29,10 @@ const MultiValueCell: React.FC<MultiValueCellProps> = ({
         navigate(`/${navigationPath}?search=${param}`)
     }
 
+    const handleIcon = (value: string) => {
+        if (iconHandler) iconHandler(value);
+    }
+
     return (
         <Popover
             trigger="click"
@@ -31,10 +41,10 @@ const MultiValueCell: React.FC<MultiValueCellProps> = ({
                     {values.map((val) => (
                         <div
                             key={val}
-                            className={`wrap-break-word text-sm ${navigationPath && 'cursor-pointer'} `}
+                            className={`flex gap-2 items-center wrap-break-word text-sm ${navigationPath && 'cursor-pointer'} `}
                             onClick={() => handleNavigation(val)}
                         >
-                            {val}
+                            {val}{icon && <span className="cursor-pointer" title={iconTitle ?? ""} onClick={() => handleIcon(val)}>{icon}</span>}
                         </div>
                     ))}
                 </div>

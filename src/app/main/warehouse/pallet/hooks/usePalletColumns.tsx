@@ -50,11 +50,11 @@ const usePalletColumns = ({ handlePalletDetails, handleQR }: UsePalletColumnsInt
                     date ? dayjs(date).format("DD MMM YYYY, hh:mm A") : "-",
             },
             {
-                title: "Location's Name",
-                dataIndex: "location",
-                key: "location",
+                title: "Location's Code",
+                dataIndex: "locationCode",
+                key: "locationCode",
                 render: (_, record) => (
-                    <span>{record?.locationName}</span>
+                    <span>{record?.locationCode}</span>
                 )
             },
             {

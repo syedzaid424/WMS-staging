@@ -9,12 +9,15 @@ import { EditOutlined } from "@ant-design/icons";
 import AppPopConfirm from "../../../../../components/popConfirm"
 import { GrClear } from "react-icons/gr"
 import { appRoutes } from "../../../../../utils/constants"
+import { ImBin2 } from "react-icons/im";
+
 
 const getWarehouseLocationColumns = (
     handleNavigation: (value: string) => void,
     handleEdit: (record: LocationRow) => void,
     handleQR: (record: LocationRow) => void,
     handleClearLocation: (locationId: string) => void,
+    iconHandler: (value: any) => void,
     clearLocationsLoading: boolean,
     totalBoxesCount: number | undefined,
     totalUnitsCount: number | undefined
@@ -53,7 +56,7 @@ const getWarehouseLocationColumns = (
             dataIndex: "palletCode",
             key: "palletCode",
             render: (values: string) => (
-                <MultiValueCell values={values?.split(',')} maxVisible={1} />
+                <MultiValueCell icon={<ImBin2 />} iconHandler={iconHandler} iconTitle="Clear pallet" values={values?.split(',')} maxVisible={1} />
             ),
         },
         // {
@@ -90,7 +93,7 @@ const getWarehouseLocationColumns = (
             key: "totalUnits",
             sorter: true
         },
-             {
+        {
             title: "Warehouse Name",
             dataIndex: "warehouseName",
             key: "warehouseName",

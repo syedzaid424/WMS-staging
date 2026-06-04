@@ -11,10 +11,10 @@ interface ColDef {
 }
 
 export const CONTAINER_ITEM_COLUMNS: ColDef[] = [
-    { label: "Model No", key: "modelNo", width: "12%" },
-    { label: "SKU", key: "sku", width: "14%" },
-    { label: "Product Name", key: "name", width: "30%" },
-    { label: "Items / Box", key: "itemPerBox", width: "12%" },
+    { label: "Model No", key: "itemCode", width: "12%" },
+    { label: "SKU", key: "itemSku", width: "14%" },
+    { label: "Product Name", key: "itemName", width: "30%" },
+    { label: "Items / Box", key: "unitPerBox", width: "12%" },
     { label: "Total Boxes", key: "totalBoxes", width: "14%", editable: true },
 ];
 
@@ -37,7 +37,7 @@ const ItemRow = ({ item, onDelete, onUpdate }: ItemRowProps) => {
                             value={item[col.key] as number}
                             min={1}
                             onChange={(val) => {
-                                if (val !== null) onUpdate(item.modelNo, val);
+                                if (val !== null) onUpdate(item.itemCode, val);
                             }}
                         />
                     ) : (
@@ -48,7 +48,7 @@ const ItemRow = ({ item, onDelete, onUpdate }: ItemRowProps) => {
             <td className="item-cell action-cell">
                 <button
                     className="delete-btn"
-                    onClick={() => onDelete(item.modelNo)}
+                    onClick={() => onDelete(item.itemCode)}
                     title="Remove item"
                 >
                     <DeleteOutlined />

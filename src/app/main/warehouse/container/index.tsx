@@ -6,15 +6,15 @@ import Loader from "../../../../components/loader"
 import { useEffect, useMemo, useState } from "react"
 import useFetch from "../../../../hooks/useFetch"
 import type { ApiResponse } from "../../../../utils/types"
-import type { ContainerCreationPayload, ContainerResponse, ContainerRow } from "../../../../types/main/container"
+import type { ContainerCreationPayload, ContainerDetailsResponse, ContainerEditPayload, ContainerResponse, ContainerRow } from "../../../../types/main/container"
 import AppTable from "../../../../components/table"
 import { useQueryFilters } from "../../../../hooks/useQueryFilter"
 import useContainerColumns from "./hooks/useContainerColumns"
 import { warehouseApiRoutes } from "../utils/apiRoutes"
 import AppButton from "../../../../components/button"
-import CreateContainerModal from "./components/createContainerModal"
 import { useMutation } from "../../../../hooks/useMutatation"
 import { useAuthStore } from "../../../../store/auth/authStore"
+import MutationContainerModal from "./components/mutationContainerModal"
 
 const defaultFilters = {
     page: 1,
@@ -31,7 +31,9 @@ const Container = () => {
     // const [viewContainerItemsModal, setViewContainerItemsModal] = useState(false);
     // const [containerCode, setContainerCode] = useState<string>("");
     const [openModal, setOpenModal] = useState(false);
+    const [openEditModal, setOpenEditModal] = useState(false);
     const [refreshContainers, setRefreshContainers] = useState(0);
+    const [editRecordState, setEditRecordState] = useState<undefined | ContainerDetailsResponse>(undefined)
     const { user } = useAuthStore();
 
     const params = useMemo(
@@ -58,14 +60,38 @@ const Container = () => {
         showSuccessMessage: false
     });
 
+    // to generate container detail.
+    const { loading: containerDetailLoader, refetch } = useFetch<ApiResponse<ContainerDetailsResponse>>({
+        endpoint: warehouseApiRoutes.getContainer,
+        params,
+        enabled: false,
+        showSuccessMessage: false
+    });
+
+    // create container.
     const { mutate, loading: creationContainerLoading } = useMutation<ApiResponse<any>>({
         endpoint: warehouseApiRoutes.createContainer,
         method: "post",
         showSuccessMessage: true,
     });
 
+    // edit container.
+    const { mutate: editContainerMutate, loading: editContainerLoading } = useMutation<ApiResponse<any>>({
+        endpoint: warehouseApiRoutes.editContainer,
+        method: "post",
+        showSuccessMessage: true,
+    });
 
-    const columns = useContainerColumns();
+    const editContainerHandler = async (record: ContainerRow) => {
+        setOpenEditModal(true);
+        const params = {
+            containerNo: record?.containerNo
+        }
+        let resp = await refetch(params);
+        setEditRecordState(resp?.data)
+    }
+
+    const columns = useContainerColumns({ editContainerHandler });
 
     const searchHandler = (value: any) => {
         updateFilters({
@@ -99,6 +125,19 @@ const Container = () => {
         const resp = await mutate(payload);
         if (resp?.status == '200' || resp?.status == '201') {
             setOpenModal(false);
+            setRefreshContainers(prev => prev + 1)
+        }
+    }
+
+    const updateContainerHandler = async (container: ContainerEditPayload) => {
+        const payload = {
+            containerItems: container.itemListing,
+            id: container.id,
+            ...container.containerForm
+        }
+        const resp = await editContainerMutate(payload);
+        if (resp?.status == '200' || resp?.status == '201') {
+            setOpenEditModal(false);
             setRefreshContainers(prev => prev + 1)
         }
     }
@@ -142,13 +181,24 @@ const Container = () => {
                 />
             </Col>
 
-            <CreateContainerModal
+            {/* for creation  */}
+            <MutationContainerModal
                 open={openModal}
                 setOpen={setOpenModal}
                 createContainerHandler={createContainerHandler}
                 creationContainerLoading={creationContainerLoading}
             />
 
+            {/* for edit */}
+            <MutationContainerModal
+                open={openEditModal}
+                setOpen={setOpenEditModal}
+                editRecord={editRecordState as ContainerDetailsResponse}
+                setEditRecord={setEditRecordState}
+                updateContainerHandler={updateContainerHandler}
+                updateContainerLoading={editContainerLoading}
+                itemListingLoading={containerDetailLoader}
+            />
         </Row>
     )
 }
