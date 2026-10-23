@@ -11,6 +11,7 @@ const warehouseApiRoutes = {
   getPallet: apiRoutes.GET_PALLET,
   createPallet: apiRoutes.CREATE_PALLET,
   clearPallet: apiRoutes.CLEAR_PALLET,
+  movePalletPackaging: apiRoutes.MOVE_PALLET_PACKAGING,
   getContainers: apiRoutes.GET_CONTAINERS,
   getContainer: apiRoutes.GET_CONTAINER,
   editContainer: apiRoutes.EDIT_CONTAINER,

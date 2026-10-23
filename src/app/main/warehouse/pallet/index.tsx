@@ -7,7 +7,7 @@ import Loader from "../../../../components/loader"
 import { useEffect, useMemo, useState } from "react"
 import useFetch from "../../../../hooks/useFetch"
 import type { ApiResponse } from "../../../../utils/types"
-import type { PalletResponse, PalletRow } from "../../../../types/main/pallet"
+import type { PalletItem, PalletResponse, PalletRow } from "../../../../types/main/pallet"
 import { warehouseApiRoutes } from "../utils/apiRoutes"
 import AppTable from "../../../../components/table"
 import usePalletColumns from "./hooks/usePalletColumns"
@@ -19,6 +19,8 @@ import { useMutation } from "../../../../hooks/useMutatation"
 import { useQueryFilters } from "../../../../hooks/useQueryFilter"
 import type { TableRowSelection } from "antd/es/table/interface"
 import QrBulkPermissionModal from "../../../../components/qrBulkModal/qrBulkModal"
+
+const PACKAGING_LOCATION_CODE = "GA-PACKAGING";
 
 const defaultFilters = {
     page: 1,
@@ -53,6 +55,13 @@ const Pallets = () => {
         showSuccessMessage: true,
     });
 
+    // move packaging of selected pallet items
+    const { mutate: movePackagingMutate, loading: movePackagingLoading } = useMutation<ApiResponse<any>>({
+        endpoint: warehouseApiRoutes.movePalletPackaging,
+        method: "post",
+        showSuccessMessage: true,
+    });
+
     const params = useMemo(
         () => ({
             pageNo: filters.page - 1,
@@ -77,6 +86,23 @@ const Pallets = () => {
         }
     }
 
+
+    // move packaging of selected pallet items, then close modal and refresh listing
+    const movePackagingHandler = async (items: PalletItem[]) => {
+        let res = await movePackagingMutate({
+            data: {
+                sourceLocationCode: palletLocationCode,
+                targetLocationCode: PACKAGING_LOCATION_CODE,
+                boxes: items.map(item => ({ itemCode: item.boxUniqueKey, quantity: 1 })),
+                processFor: "BOX"
+            }
+        });
+        if (res) {
+            setViewPalletItemsModal(false);
+            setRefreshLocations(prev => prev + 1);
+        }
+    }
+
     // to generate QR code.
     const handleQR = async (code: any) => {
         return await downloadPDF({ codes: [code] }, code);
@@ -91,6 +117,9 @@ const Pallets = () => {
         refreshTrigger: [refreshPallets, user?.warehouseId, refreshPallet],
         showSuccessMessage: false
     });
+
+    // location of the pallet currently opened in details modal
+    const palletLocationCode = data?.data?.pallets?.find(pallet => pallet.palletCode == palletItemsListingId.code)?.locationCode;
 
     useEffect(() => {
         if (!data) return;
@@ -149,6 +178,7 @@ const Pallets = () => {
     }
 
     console.log(data?.data?.pallets)
+    console.log(palletLocationCode)
 
 
     return (
@@ -209,6 +239,8 @@ const Pallets = () => {
                 palletDetailId={palletItemsListingId}
                 deletePalletItemsHandler={deletePalletItemsHandler}
                 palletClearLoading={palletClearLoading}
+                movePackagingHandler={movePackagingHandler}
+                movePackagingLoading={movePackagingLoading}
                 refreshPallet={refreshPallet}
             />
 

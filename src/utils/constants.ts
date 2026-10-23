@@ -63,6 +63,7 @@ const apiRoutes = {
   CREATE_PALLET: "/pallet",
   GET_PALLET: "/pallet-item/by-code",
   CLEAR_PALLET: "/pallet/clear",
+  MOVE_PALLET_PACKAGING: "/inventory/move",
   // CONTAINERS
   GET_CONTAINERS: "/container/all",
   GET_CONTAINER: "/container",
