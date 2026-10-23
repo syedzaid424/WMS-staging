@@ -20,8 +20,6 @@ import { useQueryFilters } from "../../../../hooks/useQueryFilter"
 import type { TableRowSelection } from "antd/es/table/interface"
 import QrBulkPermissionModal from "../../../../components/qrBulkModal/qrBulkModal"
 
-const PACKAGING_LOCATION_CODE = "GA-PACKAGING";
-
 const defaultFilters = {
     page: 1,
     pageSize: 10,
@@ -88,11 +86,11 @@ const Pallets = () => {
 
 
     // move packaging of selected pallet items, then close modal and refresh listing
-    const movePackagingHandler = async (items: PalletItem[]) => {
+    const movePackagingHandler = async (items: PalletItem[], targetLocationCode: string) => {
         let res = await movePackagingMutate({
             data: {
                 sourceLocationCode: palletLocationCode,
-                targetLocationCode: PACKAGING_LOCATION_CODE,
+                targetLocationCode,
                 boxes: items.map(item => ({ itemCode: item.boxUniqueKey, quantity: 1 })),
                 processFor: "BOX"
             }

@@ -1,4 +1,4 @@
-import { Col, Row } from "antd";
+import { Col, Input, Row } from "antd";
 import AppModal from "../../../../../components/modal"
 import useFetch from "../../../../../hooks/useFetch";
 import type { PalletDetailsResponse, PalletItem } from "../../../../../types/main/pallet";
@@ -19,7 +19,7 @@ interface PalletItemsListingModalInterface {
     palletDetailId: Record<string, string | null | boolean>;
     deletePalletItemsHandler: (code: string) => void;
     palletClearLoading: boolean;
-    movePackagingHandler: (items: PalletItem[]) => void;
+    movePackagingHandler: (items: PalletItem[], targetLocationCode: string) => void;
     movePackagingLoading: boolean;
     refreshPallet: number
 }
@@ -28,6 +28,7 @@ const PalletItemsListingModal = ({ open, setOpen, palletDetailId, deletePalletIt
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [selectedRows, setSelectedRows] = useState<PalletItem[]>([]);
+    const [targetLocationCode, setTargetLocationCode] = useState("");
 
     // to generate pallets listing.
     const { loading, data } = useFetch<ApiResponse<PalletDetailsResponse>>({
@@ -48,10 +49,24 @@ const PalletItemsListingModal = ({ open, setOpen, palletDetailId, deletePalletIt
         setSelectedRows([]);
     }, [open, refreshPallet]);
 
+    // reset target location whenever modal opens/closes
+    useEffect(() => {
+        setTargetLocationCode("");
+    }, [open]);
+
+    const canMovePackaging = selectedRowKeys.length > 0 && targetLocationCode.trim().length > 0;
+
+    const movePackagingSubmitHandler = () => {
+        if (!canMovePackaging || movePackagingLoading) return;
+        movePackagingHandler(selectedRows, targetLocationCode.trim());
+    };
+
     // on selection of row handler
     const onSelectChange = (newSelectedRowKeys: React.Key[], newSelectedRows: PalletItem[]) => {
         setSelectedRowKeys(newSelectedRowKeys);
         setSelectedRows(newSelectedRows);
+        // input gets hidden when nothing is selected, so drop the stale location
+        if (newSelectedRowKeys.length == 0) setTargetLocationCode("");
     };
 
     // select row config
@@ -66,7 +81,7 @@ const PalletItemsListingModal = ({ open, setOpen, palletDetailId, deletePalletIt
             open={open}
             onCancel={() => setOpen(false)}
             title='Pallet Details'
-            width={600}
+            width={700}
             destroyOnHidden
         >
             {
@@ -101,22 +116,33 @@ const PalletItemsListingModal = ({ open, setOpen, palletDetailId, deletePalletIt
                             </div>
                         </Col>
                         <Col span={24}>
-                            <div className="flex justify-between items-center flex-1 min-w-37.5 mb-4!">
+                            <div className="flex flex-wrap justify-between items-center gap-3 flex-1 min-w-37.5 mb-4!">
                                 <AppText className="text-xs sm:text-sm text-gray-500 font-semibold">
                                     Boxes ({data?.data?.items?.length})
                                 </AppText>
-                                <div className="flex gap-3 items-center">
+                                <div className="flex flex-wrap gap-3 items-center">
+                                    {selectedRowKeys.length > 0 &&
+                                        <Input
+                                            placeholder="Target location code"
+                                            value={targetLocationCode}
+                                            onChange={(e) => setTargetLocationCode(e.target.value)}
+                                            onPressEnter={movePackagingSubmitHandler}
+                                            allowClear
+                                            autoFocus
+                                            className="w-48!"
+                                        />
+                                    }
                                     <AppPopConfirm
                                         title="Move Packaging"
-                                        description="Are you sure to move packaging of selected items?"
+                                        description={`Are you sure to move ${selectedRowKeys.length} box(es) to ${targetLocationCode.trim()}?`}
                                         placement="topRight"
-                                        onConfirm={() => movePackagingHandler(selectedRows)}
+                                        onConfirm={movePackagingSubmitHandler}
                                         okButtonProps={{ loading: movePackagingLoading }}
                                     >
                                         <AppButton
                                             className="w-fit"
                                             title="Move Packaging"
-                                            disabled={selectedRowKeys.length == 0}
+                                            disabled={!canMovePackaging}
                                         >
                                             Move Packaging
                                         </AppButton>
